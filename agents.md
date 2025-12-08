@@ -16,6 +16,7 @@ This file provides guidance for GitHub Copilot and other AI assistants working o
 - **Architecture**: Client-side only, static deployment
 - **Data Storage**: Browser localStorage only (no backend, no database)
 - **Scope**: Simple scoring tracker for Cardio Tennis game
+- **User Role**: Coach/facilitator (not a player), no authentication/login required
 
 ## Code Standards
 
@@ -77,7 +78,109 @@ This file provides guidance for GitHub Copilot and other AI assistants working o
 
 ## Game Domain (Cardio Tennis)
 
-Details about scoring rules will be added as the human explains the game mechanics. Agents should reference this section when implementing scoring logic.
+### Overview
+Cardio Tennis is a fun, group tennis activity where players rotate through matches on multiple courts. The app tracks scores across matches and helps the facilitator manage team assignments and court rotations.
+
+### User Persona
+- **Coach/Facilitator**: Manages the session, not a player
+- **No Authentication**: Everything runs locally in browser
+- **Simple UI**: Quick interactions during active play
+
+### Session Workflow
+
+#### 1. New Session
+- "New Session" button (disabled/hidden if session in progress)
+- Input: Number of courts
+- Input: Number of players (4-8 players per court)
+- Players physically count off and remember their numbers
+
+#### 2. Round Structure (3-Match Rounds)
+- **Core Rule**: Teams stay together for **3 consecutive matches**
+- After 3 matches complete, new teams are formed
+- Courts are ranked: **Court 1** (winner/top court) ? **Court N** (loser/bottom court)
+
+#### 3. First Match Assignment (Round 1, Match 1)
+- System randomly assigns players to:
+  - Courts (numbered 1 to N)
+  - Teams (within each court)
+- **Balancing Rule**: Team sizes must differ by no more than 1 player
+  - Example: 7 players on a court ? Team A (4 players), Team B (3 players)
+
+#### 4. Match Play & Scoring
+- Display each court with its teams
+- Show round progress: "Round X, Match Y/3"
+- Facilitator selects winning team for each court
+- **Scoring**: Each player on winning team receives 1 point
+
+#### 5. Court Rotation ("Up and Down the Ladder")
+**Applies to**: Matches 2 and 3 within each 3-match round
+
+**Single Court:**
+- Teams stay on same court (no rotation needed)
+- Same teams play 3 matches in a row
+
+**Multiple Courts:**
+- **Winners move UP** (toward Court 1)
+- **Losers move DOWN** (toward Court N)
+- This creates: **Winners vs. Winners**, **Losers vs. Losers**
+
+**Example with 2 Courts:**
+```
+Round 1, Match 1:
+  Court 1: Team A vs Team B ? Team A wins
+  Court 2: Team C vs Team D ? Team C wins
+
+Round 1, Match 2:
+  Court 1: Team A vs Team C (both won Match 1 - moved up)
+  Court 2: Team B vs Team D (both lost Match 1 - moved down)
+
+Round 1, Match 3:
+  Court 1: [Winner of Court 1 Match 2] vs [Winner of Court 2 Match 2]
+  Court 2: [Loser of Court 1 Match 2] vs [Loser of Court 2 Match 2]
+```
+
+**Edge Cases:**
+- Court 1 winners: Already at top, stay at Court 1
+- Court N losers: Already at bottom, stay at Court N
+- System handles these boundary conditions automatically
+
+#### 6. New Round (After 3 Matches)
+- Display all player scores
+- System forms new teams (randomized for MVP)
+  - **Goal**: Mix teams so everyone plays with everyone equally
+  - **OR**: Balance by win/loss for competitive matches
+- Start next round with new team assignments
+
+#### 7. Session End
+- Display final scores for all players
+- Session can be ended/cleared
+
+### Scoring Rules (MVP)
+- **Win = 1 point per player** on winning team
+- **Loss = 0 points**
+- Track cumulative score across all matches in session
+
+### Future Features (Not MVP)
+- Add players mid-session (late arrivals)
+- Associate player names with numbers (before or during count-off)
+- Advanced team-balancing algorithms
+- Session history/statistics
+- Session duration tracking (for matches-per-hour planning)
+
+### Key Data Models
+- **Session**: Courts count, total players, session status, current round number
+- **Round**: Round number, 3 matches, team assignments
+- **Player**: Number, name (optional), total score
+- **Match**: Match number, round number, court assignments, team assignments, results
+- **Court**: Court number, Team A players, Team B players, winning team
+- **Team**: Players list, wins in current round
+
+### UI/UX Principles
+- Simple, touch-friendly (coach uses phone/tablet courtside)
+- Minimal taps to record match results
+- Clear visual separation of courts and teams
+- Quick access to current scores
+- Show round/match progress clearly (e.g., "Round 2, Match 2/3")
 
 ---
 

@@ -1,0 +1,51 @@
+Let's get an agents.md file started, or copilot instructions if that works better. First and foremost, no git actions will be taken by copilot, only the human will do git operations.
+This is a webassebly blazor PWA app that will track a game called cardio tennis's scoring. It will be a simple app with only browser local storage, and will be depeployed statically. I will explain how the game scoring works but let's start with a md file for you and other agents to see
+
+----------
+
+yes, proceed. are you sure contributing.md is the preferred file name?
+
+----------
+
+Add the agent file, not the human contributing file.
+
+----------
+
+The user will be the coach/faciitator of the cardio tennis session. The user is not a player. There is no login of any kind--everything is local.
+
+The user will click on something that says "New Session". It probably won't be available if a session is already in progress.
+
+The user will select the number of courts and players. You can have a minimum of four and a maximim of eight players to a court. (future feature: be able to add players after or during the match as late players arrive.)
+
+The user will be instructed to have players count off, each saying and remembering their number. (future feature: Be able to add names to player numbers, possibly in advance, possibly when calling off numbers)
+
+The system will randomly* set teams and court assignments for the first match. It will balance the number of players per team so that the difference between the largest and smallest team can only be 1.
+
+*"Randomly" may not be the right term, as we want to mix the teams as much as possible so everyone plays with everyone equally, OR we mix players based on win/loss to try to make fair/competitive/fun matches. We may need to build or find a simple algorithm that can do this. It would probably be based on x matches per hour, so we may also need to ask how long the session is (1, 1.5, or 2 hours are common).
+
+The first match will be played, and scored as follows:
+
+1. App will show each court and user will select the winning team.
+2. Each player on each winning team will be awarded a point.
+
+Scores for all players will be displayed. App will select the players and teams for the next match, and the process will repeat until the session is completed, where the final scores will be displayed.
+
+Those are the basics. feel free to re-word or ask questions. It is a very simple app and cardio tennis is mostly for fun.
+
+----------
+
+I missed something. Teams stay together for three matches at a time. Winners play winners and losers play losers twice by one team switching courts. There is a winner court (Court 1?) and a loser court. After these three matches is when new teams are assembled.
+
+----------
+
+
+
+
+
+
+
+
+
+
+
+

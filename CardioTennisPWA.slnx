@@ -1,3 +1,6 @@
 <Solution>
+  <Folder Name="/SolutionFiles/">
+    <File Path="PromptHistory.txt" />
+  </Folder>
   <Project Path="CardioTennisPWA/CardioTennisPWA.csproj" />
 </Solution>
