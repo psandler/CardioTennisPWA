@@ -38,6 +38,14 @@ I missed something. Teams stay together for three matches at a time. Winners pla
 
 ----------
 
+The three matches can be cut short at any time. You will always have a winner and loser for a match, but you might only have two matches played before re-assigning teams. So after each match, the user should be able to indicate if they want to continue with the current teams for another match, or re-assign teams for a new match.
+
+Also, when initial teams are drawn for the first set of matches (only), the user should be able to re-draw teams if they don't like the initial assignment.
+
+Also, if not specified already, there should be an end session button that will end the session and show final scores.
+
+----------
+
 
 
 

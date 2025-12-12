@@ -29,7 +29,7 @@ As a **tennis coach/facilitator**, I want to quickly track player scores across 
 
 #### FR-1.3: End Session
 - **Given** a session is in progress
-- **When** coach ends the session
+- **When** coach taps "End Session" button
 - **Then** final scores are displayed
 - **And** session data is cleared from active state
 - **Optional**: Archive completed session to localStorage history
@@ -60,9 +60,10 @@ As a **tennis coach/facilitator**, I want to quickly track player scores across 
 
 ### FR-3: Match Management
 
-#### FR-3.1: Round Structure (3-Match Rounds)
-- **Core Rule**: Teams stay together for **3 consecutive matches** (a "round")
-- After 3 matches, new teams are formed
+#### FR-3.1: Round Structure (Flexible 1-3 Match Rounds)
+- **Core Rule**: Teams stay together for **up to 3 consecutive matches** (a "round")
+- Coach can end round early after any match (minimum 1 match)
+- After round ends, new teams are formed
 - Courts are ranked: Court 1 (highest/winner court) → Court N (lowest/loser court)
 
 #### FR-3.2: First Match Assignment (Round 1, Match 1)
@@ -76,12 +77,19 @@ As a **tennis coach/facilitator**, I want to quickly track player scores across 
   - Teams on each court differ by at most 1 player
   - Example: 7 players on a court → Team A (4), Team B (3)
 
-#### FR-3.3: Record Match Results
+#### FR-3.3: Re-draw Initial Teams (First Round Only)
+- **Given** initial teams displayed for Round 1, Match 1
+- **When** coach taps "Re-draw Teams" button
+- **Then** system generates new random team assignments
+- **And** displays updated assignments
+- **Note**: This option is only available before the first match starts
+
+#### FR-3.4: Record Match Results
 - **Given** match is in progress
 - **When** coach views court list
 - **Then** each court shows:
   - Court number
-  - Match number within round (1/3, 2/3, or 3/3)
+  - Match number within round (e.g., "Match 1", "Match 2", "Match 3")
   - Team A players (by number)
   - Team B players (by number)
   - Selectable buttons: "Team A Wins" | "Team B Wins"
@@ -89,8 +97,18 @@ As a **tennis coach/facilitator**, I want to quickly track player scores across 
 - **Then** match result is recorded
 - **And** points awarded to winning players
 
-#### FR-3.4: Court Rotation ("Up and Down the Ladder")
-- **Applies to**: Matches 2 and 3 within each round
+#### FR-3.5: Post-Match Options
+- **Given** a match has just been recorded
+- **When** coach views post-match screen
+- **Then** coach sees two options:
+  - **"Continue with Current Teams"** - Play another match (up to 3 total)
+  - **"Re-assign Teams"** - End current round, form new teams
+- **Validation**: 
+  - "Continue" disabled after 3rd match in round
+  - "Continue" triggers court rotation if multiple courts
+
+#### FR-3.6: Court Rotation ("Up and Down the Ladder")
+- **Applies to**: Matches 2 and 3 within each round (when coach chooses "Continue")
 - **Single Court**: Teams stay on same court (no rotation)
 - **Multiple Courts**:
   - **Match 1 → Match 2**:
@@ -107,11 +125,11 @@ Match 1:
   Court 1: Team A vs Team B → Team A wins
   Court 2: Team C vs Team D → Team C wins
 
-Match 2:
+Match 2 (if coach chooses "Continue"):
   Court 1: Team A vs Team C (both won Match 1)
   Court 2: Team B vs Team D (both lost Match 1)
 
-Match 3:
+Match 3 (if coach chooses "Continue" again):
   Court 1: Winner of Match 2 Court 1 vs Winner of Match 2 Court 2
   Court 2: Loser of Match 2 Court 1 vs Loser of Match 2 Court 2
 ```
@@ -121,9 +139,9 @@ Match 3:
 - **Court N Losers**: Already at bottom, stay at Court N
 - **Odd number of teams**: System handles unbalanced rotations
 
-#### FR-3.5: New Round Assignment (After 3 Matches)
-- **Given** 3 matches completed in current round
-- **When** coach starts next match
+#### FR-3.7: New Round Assignment (After Round Ends)
+- **Given** coach chooses "Re-assign Teams" or 3rd match completes
+- **When** next match starts
 - **Then** system forms new teams
 - **Algorithm Goal (MVP)**: Random with aim to mix teams
 - **Future**: Smart algorithm based on:
@@ -131,7 +149,7 @@ Match 3:
   - Win/loss balancing
   - Session length (matches per hour)
 
-#### FR-3.6: Match History
+#### FR-3.8: Match History
 - **Given** multiple matches played
 - **When** coach views history
 - **Then** list shows:
@@ -235,8 +253,13 @@ Match 3:
    - Validation message
    - "Start Session" button
 
-3. **Match Screen (Active)**
-   - Round number and match number (e.g., "Round 2, Match 2/3")
+3. **Initial Team Assignment Screen (Round 1 Only)**
+   - Display court and team assignments
+   - "Re-draw Teams" button
+   - "Start Match" button
+
+4. **Match Screen (Active)**
+   - Round number and match number (e.g., "Round 2, Match 2")
    - For each court:
      - Court number
      - Team A players (by number)
@@ -245,13 +268,20 @@ Match 3:
    - "View Scores" button
    - "End Session" button
 
-4. **Scores Screen**
+5. **Post-Match Options Screen**
+   - Current scores summary
+   - "Continue with Current Teams" button (disabled after 3rd match)
+   - "Re-assign Teams" button
+   - "View Scores" button
+   - "End Session" button
+
+6. **Scores Screen**
    - Player list with scores
    - Sort options
    - "Back to Match" button
    - "End Session" button
 
-5. **End Session Screen**
+7. **End Session Screen**
    - Final scores
    - "Start New Session" button
 
@@ -262,7 +292,7 @@ Match 3:
 1. **Team Assignment Algorithm**: MVP is random, but future needs smart balancing. Should we plan the interface now?
 2. **Session Length Input**: Needed for future algorithm, include in MVP setup?
 3. **Court Count Max**: Any practical upper limit?
-4. **Match Count**: Fixed number or continue until coach ends session?
+4. ~~**Match Count**: Fixed number or continue until coach ends session?~~ **RESOLVED**: Flexible, coach decides after each match
 5. **Tie-breaking**: If final scores tied, display order or special indicator?
 6. **Court Rotation Edge Cases**: With odd number of courts, how do middle courts rotate? (e.g., 3 courts, Court 2 winner/loser movement)
 
@@ -272,13 +302,16 @@ Match 3:
 
 - Coach can run a 1-hour session with 2 courts and 12 players
 - All scores are accurately tracked
-- Court rotation ("up and down the ladder") works correctly for 3-match rounds
+- Court rotation ("up and down the ladder") works correctly for 1-3 match rounds
+- Coach can flexibly end rounds early or continue up to 3 matches
+- Coach can re-draw initial teams if unsatisfied
+- "End Session" button available at all times
 - App works offline throughout session
 - Coach can complete match result entry in < 5 seconds per court
 - No data loss if browser is accidentally closed
 
 ---
 
-**Document Version**: 1.1  
+**Document Version**: 1.2  
 **Last Updated**: 2025-12-06  
 **Status**: Draft for Review

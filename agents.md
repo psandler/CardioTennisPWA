@@ -94,9 +94,10 @@ Cardio Tennis is a fun, group tennis activity where players rotate through match
 - Input: Number of players (4-8 players per court)
 - Players physically count off and remember their numbers
 
-#### 2. Round Structure (3-Match Rounds)
-- **Core Rule**: Teams stay together for **3 consecutive matches**
-- After 3 matches complete, new teams are formed
+#### 2. Round Structure (Flexible 1-3 Match Rounds)
+- **Core Rule**: Teams stay together for **up to 3 consecutive matches**
+- **Flexible**: Coach can end round early after any match (minimum 1)
+- After round ends, new teams are formed
 - Courts are ranked: **Court 1** (winner/top court) ? **Court N** (loser/bottom court)
 
 #### 3. First Match Assignment (Round 1, Match 1)
@@ -105,19 +106,29 @@ Cardio Tennis is a fun, group tennis activity where players rotate through match
   - Teams (within each court)
 - **Balancing Rule**: Team sizes must differ by no more than 1 player
   - Example: 7 players on a court ? Team A (4 players), Team B (3 players)
+- **Re-draw Option**: Coach can tap "Re-draw Teams" to regenerate assignments
+  - Only available before first match starts
+  - Can re-draw multiple times until satisfied
 
 #### 4. Match Play & Scoring
 - Display each court with its teams
-- Show round progress: "Round X, Match Y/3"
+- Show round and match number: "Round X, Match Y"
 - Facilitator selects winning team for each court
 - **Scoring**: Each player on winning team receives 1 point
 
-#### 5. Court Rotation ("Up and Down the Ladder")
-**Applies to**: Matches 2 and 3 within each 3-match round
+#### 5. Post-Match Decision
+**After each match**, coach chooses:
+- **"Continue with Current Teams"**: Play another match (up to 3 total in round)
+  - Triggers court rotation if multiple courts
+  - Disabled after 3rd match in round
+- **"Re-assign Teams"**: End current round, form new teams for next round
+
+#### 6. Court Rotation ("Up and Down the Ladder")
+**Applies when**: Coach chooses "Continue with Current Teams" (matches 2 and 3)
 
 **Single Court:**
 - Teams stay on same court (no rotation needed)
-- Same teams play 3 matches in a row
+- Same teams play up to 3 matches in a row
 
 **Multiple Courts:**
 - **Winners move UP** (toward Court 1)
@@ -130,9 +141,13 @@ Round 1, Match 1:
   Court 1: Team A vs Team B ? Team A wins
   Court 2: Team C vs Team D ? Team C wins
 
+Coach chooses "Continue" ?
+
 Round 1, Match 2:
   Court 1: Team A vs Team C (both won Match 1 - moved up)
   Court 2: Team B vs Team D (both lost Match 1 - moved down)
+
+Coach chooses "Continue" again ?
 
 Round 1, Match 3:
   Court 1: [Winner of Court 1 Match 2] vs [Winner of Court 2 Match 2]
@@ -144,16 +159,20 @@ Round 1, Match 3:
 - Court N losers: Already at bottom, stay at Court N
 - System handles these boundary conditions automatically
 
-#### 6. New Round (After 3 Matches)
+#### 7. New Round (After Round Ends)
+- Coach chooses "Re-assign Teams" OR completes 3rd match
 - Display all player scores
 - System forms new teams (randomized for MVP)
   - **Goal**: Mix teams so everyone plays with everyone equally
   - **OR**: Balance by win/loss for competitive matches
 - Start next round with new team assignments
 
-#### 7. Session End
-- Display final scores for all players
-- Session can be ended/cleared
+#### 8. End Session
+- **"End Session" button** available at all times during session
+- When tapped:
+  - Display final scores for all players
+  - Clear active session state
+  - Return to home screen
 
 ### Scoring Rules (MVP)
 - **Win = 1 point per player** on winning team
@@ -169,7 +188,7 @@ Round 1, Match 3:
 
 ### Key Data Models
 - **Session**: Courts count, total players, session status, current round number
-- **Round**: Round number, 3 matches, team assignments
+- **Round**: Round number, matches played (1-3), team assignments, status (active/completed)
 - **Player**: Number, name (optional), total score
 - **Match**: Match number, round number, court assignments, team assignments, results
 - **Court**: Court number, Team A players, Team B players, winning team
@@ -180,7 +199,26 @@ Round 1, Match 3:
 - Minimal taps to record match results
 - Clear visual separation of courts and teams
 - Quick access to current scores
-- Show round/match progress clearly (e.g., "Round 2, Match 2/3")
+- Show round/match progress clearly (e.g., "Round 2, Match 2")
+- "End Session" always accessible
+- Post-match decision flow is obvious and quick
+
+### Critical UI Flows
+
+**Initial Setup:**
+1. New Session ? Configure courts/players ? Display initial teams
+2. [Optional] Re-draw teams ? Display new teams
+3. Start Match ? Record results ? Post-match decision
+
+**Mid-Session (After Match):**
+1. Record match results ? Post-match screen with scores
+2. Choose: Continue (up to 3) OR Re-assign
+3. If Continue: Rotate courts ? Next match
+4. If Re-assign: Form new teams ? Next round
+
+**Anytime:**
+- View Scores ? Return to current match
+- End Session ? Final scores ? Home
 
 ---
 
