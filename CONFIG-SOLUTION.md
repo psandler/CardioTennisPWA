@@ -51,14 +51,31 @@ This is a **true config-based approach** that uses environment-specific configur
 3. `wwwroot/appsettings.json` - Blazor config (Dev)
 4. `wwwroot/appsettings.Release.json` - Blazor config (Release)
 5. `wwwroot/manifest.webmanifest` - Dev manifest
-6. `wwwroot/manifest.Release.webmanifest` - Prod manifest
+6. `wwwroot/manifest.Release.webmanifest` - Prod manifest with absolute paths
 7. `Models/AppSettings.cs` - Config model (optional, for future use)
+8. `build-scripts/remove-from-sw-assets.py` - Removes replaced files from service worker cache manifest
+9. `CONFIG-SOLUTION.md` - Complete documentation
 
 ### Modified Files
 1. `CardioTennisPWA.csproj` - Added `CopyEnvironmentConfig` MSBuild target
-2. `wwwroot/index.html` - Loads app-config.js, sets base href dynamically
-3. `wwwroot/service-worker.published.js` - Imports app-config.js, uses baseUrl
-4. `.github/workflows/deploy.yml` - Simplified (no sed commands)
+2. `wwwroot/index.html` - Loads app-config.js, uses document.write() to inject base href
+3. `wwwroot/service-worker.published.js` - Imports app-config.js, uses baseUrl, excludes app-config.js from cache
+4. `.github/workflows/deploy.yml` - Simplified (just publish, no sed)
+
+**MSBuild Target:**
+```xml
+<Target Name="CopyEnvironmentConfig" AfterTargets="Publish">
+  <!-- 1. Copy app-config.Release.js ? app-config.js -->
+  <!-- 2. Copy manifest.Release.webmanifest ? manifest.webmanifest -->
+  <!-- 3. Run Python script to remove replaced files from service worker assets -->
+</Target>
+```
+
+**Python Script** (`build-scripts/remove-from-sw-assets.py`):
+- Parses `service-worker-assets.js`
+- Removes `app-config.js` and `manifest.webmanifest` from assets array
+- These files were replaced, so their integrity hashes are invalid
+- Writes updated manifest back to file
 
 ## Benefits
 

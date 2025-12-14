@@ -36,6 +36,10 @@
       DestinationFiles="$(PublishWwwRoot)manifest.webmanifest" 
       Condition="Exists('wwwroot\manifest.$(Configuration).webmanifest')"
       OverwriteReadOnlyFiles="true" />
+    
+    <!-- Remove replaced files from service worker assets manifest (integrity hashes are now invalid) -->
+    <Exec Command="python $(ProjectDir)..\build-scripts\remove-from-sw-assets.py &quot;$(PublishWwwRoot)service-worker-assets.js&quot;" 
+      Condition="Exists('$(PublishWwwRoot)service-worker-assets.js')" />
   </Target>
 
 </Project>

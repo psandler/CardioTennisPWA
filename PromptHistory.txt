@@ -1,4 +1,4 @@
-Let's get an agents.md file started, or copilot instructions if that works better. First and foremost, no git actions will be taken by copilot, only the human will do git operations.
+﻿Let's get an agents.md file started, or copilot instructions if that works better. First and foremost, no git actions will be taken by copilot, only the human will do git operations.
 This is a webassebly blazor PWA app that will track a game called cardio tennis's scoring. It will be a simple app with only browser local storage, and will be depeployed statically. I will explain how the game scoring works but let's start with a md file for you and other agents to see
 
 ----------
@@ -102,3 +102,26 @@ This runs locally, but I don't see the PWA install functionality. When I try the
 GET https://psandler.github.io/lib/bootstrap/dist/css/bootstrap.min.css net::ERR_ABORTED 404 (Not Found)
 GET https://psandler.github.io/manifest.webmanifest 404 (Not Found)
 
+----------
+
+Deployment now works again, but still no PWA install functionality. Here are the errors, which seem to be the same:
+
+Failed to find a valid digest in the 'integrity' attribute for resource 'https://psandler.github.io/CardioTennisPWA/app-config.js' with computed SHA-256 integrity 'TY5N4/1SGUoCKO/qOKYsSdyh62x7xmDxxE6lTzs8Lb0='. The resource has been blocked.Understand this error
+Fetch API cannot load https://psandler.github.io/CardioTennisPWA/app-config.js. SRI's integrity checks failed.Understand this error
+service-worker.js:30 Uncaught (in promise) TypeError: Failed to fetch. SRI's integrity checks failed.
+    at service-worker.js:30:54
+    at async onInstall (service-worker.js:30:5)
+
+----------
+
+Would this be a better approach than what you just did? Give me the pros and cons. Have we already tried this approach?
+
+"Generate app-config.js before the service worker assets manifest is built. For example, have your MSBuild logic or a pre-publish step:
+
+Copy/transform app-config.Release.js → app-config.js.
+
+Then run the publish / SW manifest generation.
+
+Now the hash in service-worker-assets.js is for the actual deployed file."
+
+No code changes.
