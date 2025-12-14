@@ -1,7 +1,105 @@
 ﻿@page "/"
+@using CardioTennisPWA.Services
+@inject ILocalStorageService LocalStorage
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Cardio Tennis PWA - Hello World</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="container mt-4">
+    <h1>🎾 Cardio Tennis Score Tracker</h1>
+    <p class="lead">Hello World PWA with localStorage Demo</p>
 
-Welcome to your new app.
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5 class="card-title">localStorage Test</h5>
+            
+            <div class="mb-3">
+                <label for="messageInput" class="form-label">Enter a message:</label>
+                <input type="text" 
+                       class="form-control" 
+                       id="messageInput" 
+                       @bind="message" 
+                       @bind:event="oninput"
+                       placeholder="Type something..." />
+            </div>
+
+            <div class="btn-group mb-3" role="group">
+                <button class="btn btn-primary" @onclick="SaveMessage">
+                    💾 Save to localStorage
+                </button>
+                <button class="btn btn-success" @onclick="LoadMessage">
+                    📂 Load from localStorage
+                </button>
+                <button class="btn btn-danger" @onclick="ClearMessage">
+                    🗑️ Clear
+                </button>
+            </div>
+
+            @if (!string.IsNullOrEmpty(savedMessage))
+            {
+                <div class="alert alert-success" role="alert">
+                    <strong>Saved:</strong> @savedMessage
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(loadedMessage))
+            {
+                <div class="alert alert-info" role="alert">
+                    <strong>Loaded from localStorage:</strong> @loadedMessage
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5 class="card-title">PWA Status</h5>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">✅ Blazor WebAssembly</li>
+                <li class="list-group-item">✅ Service Worker registered</li>
+                <li class="list-group-item">✅ PWA manifest configured</li>
+                <li class="list-group-item">✅ localStorage service ready</li>
+                <li class="list-group-item">✅ Offline capable</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string message = "";
+    private string savedMessage = "";
+    private string loadedMessage = "";
+    private const string StorageKey = "cardiotennis:demo-message";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadMessage();
+        }
+    }
+
+    private async Task SaveMessage()
+    {
+        if (string.IsNullOrWhiteSpace(message))
+            return;
+
+        await LocalStorage.SetItemAsync(StorageKey, message);
+        savedMessage = message;
+        StateHasChanged();
+    }
+
+    private async Task LoadMessage()
+    {
+        loadedMessage = await LocalStorage.GetItemAsync<string>(StorageKey) ?? "(nothing saved yet)";
+        StateHasChanged();
+    }
+
+    private async Task ClearMessage()
+    {
+        await LocalStorage.RemoveItemAsync(StorageKey);
+        message = "";
+        savedMessage = "";
+        loadedMessage = "(cleared)";
+        StateHasChanged();
+    }
+}

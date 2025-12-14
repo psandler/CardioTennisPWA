@@ -46,14 +46,9 @@ Also, if not specified already, there should be an end session button that will 
 
 ----------
 
+Let's start with a quick, hello world blazor PWA app with local storage.
 
+Then let's focus on getting it deployed and deployments working. I intent to use GitHub pages for static hosting.
 
-
-
-
-
-
-
-
-
+So quick blazor PWA hello world with local storage, then deployment to GitHub pages (or instructions for the human if needed).
 

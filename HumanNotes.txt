@@ -1,0 +1,1 @@
+- Generally using Claude Sonnet 4.5 as the model with copilot in vs 2026 as the agent.

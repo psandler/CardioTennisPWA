@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/SolutionFiles/">
+    <File Path="HumanNotes.txt" />
     <File Path="PromptHistory.txt" />
   </Folder>
   <Folder Name="/Test/" />
