@@ -70,3 +70,27 @@ sed: can't read publish/wwwroot/service-worker.published.js: No such file or dir
 Error: Process completed with exit code 2.
 
 ----------
+
+deployed successfully. I see a service worker, but it has errors, which are the same errors I see in the console:
+
+Failed to find a valid digest in the 'integrity' attribute for resource 'https://psandler.github.io/CardioTennisPWA/index.html' with computed SHA-256 integrity 'NA2YlK9LCTDvYzSWbWtFrttuAchkg3opclsF3kDuPwU='. The resource has been blocked.Understand this error
+Fetch API cannot load https://psandler.github.io/CardioTennisPWA/index.html. SRI's integrity checks failed.Understand this error
+service-worker.js:28 Uncaught (in promise) TypeError: Failed to fetch. SRI's integrity checks failed.
+    at service-worker.js:28:54
+    at async onInstall (service-worker.js:28:5)
+
+----------
+
+I rolled back your most recent changes. I don't like the solution you implemented, which was "remove the integrity check for index.html from the service worker assets manifest."
+
+Let's find another way to change the base href by environment. If this can be done with a config file (or files) that get swapped at build time, that would be a better solution.
+
+----------
+
+Answer the question: did you just implement the same solution I just told you I didn't like? What are the material differences between the changes you just made and the original solution that I rejected? Will a config-based approach not work? No code changes. 
+
+----------
+
+"Would you like me to implement a true config-based approach using one of the options above?"
+
+Yes, and I have rolled your changes back again, so start fresh with a config-based approach.

@@ -17,4 +17,25 @@
     <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
   </ItemGroup>
 
+  <!-- Copy environment-specific configuration files during publish -->
+  <Target Name="CopyEnvironmentConfig" AfterTargets="Publish">
+    <PropertyGroup>
+      <PublishWwwRoot>$(PublishDir)wwwroot\</PublishWwwRoot>
+    </PropertyGroup>
+    
+    <!-- Copy app-config based on configuration -->
+    <Copy 
+      SourceFiles="wwwroot\app-config.$(Configuration).js" 
+      DestinationFiles="$(PublishWwwRoot)app-config.js" 
+      Condition="Exists('wwwroot\app-config.$(Configuration).js')"
+      OverwriteReadOnlyFiles="true" />
+    
+    <!-- Copy manifest based on configuration -->
+    <Copy 
+      SourceFiles="wwwroot\manifest.$(Configuration).webmanifest" 
+      DestinationFiles="$(PublishWwwRoot)manifest.webmanifest" 
+      Condition="Exists('wwwroot\manifest.$(Configuration).webmanifest')"
+      OverwriteReadOnlyFiles="true" />
+  </Target>
+
 </Project>
