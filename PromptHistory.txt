@@ -94,3 +94,11 @@ Answer the question: did you just implement the same solution I just told you I 
 "Would you like me to implement a true config-based approach using one of the options above?"
 
 Yes, and I have rolled your changes back again, so start fresh with a config-based approach.
+
+----------
+
+This runs locally, but I don't see the PWA install functionality. When I try the deployed version I get nothing but 404 errrors:
+
+GET https://psandler.github.io/lib/bootstrap/dist/css/bootstrap.min.css net::ERR_ABORTED 404 (Not Found)
+GET https://psandler.github.io/manifest.webmanifest 404 (Not Found)
+

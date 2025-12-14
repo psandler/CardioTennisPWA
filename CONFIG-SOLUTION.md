@@ -28,10 +28,16 @@ This is a **true config-based approach** that uses environment-specific configur
 ### 3. Runtime Configuration Loading
 
 **index.html:**
-- Loads `app-config.js` early in `<head>`
-- JavaScript reads `self.appConfig.baseUrl`
-- Dynamically sets `<base href>` before any resources load
+- Loads `app-config.js` **first** in `<head>`
+- Uses `document.write()` to inject `<base href>` **before** HTML parser encounters any `<link>` tags
+- This ensures all resources (CSS, manifest, icons) load from the correct base path
 - Dynamically sets service worker registration path
+
+**Why `document.write()`?**
+- The browser parses HTML sequentially
+- Once it sees a `<link>` tag, it immediately requests that resource
+- We must set `<base href>` **before** the first `<link>` tag
+- `document.write()` executes synchronously during parsing, allowing us to inject the base tag in time
 
 **service-worker.published.js:**
 - Imports `app-config.js`
