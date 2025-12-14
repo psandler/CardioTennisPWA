@@ -56,3 +56,9 @@ So quick blazor PWA hello world with local storage, then deployment to GitHub pa
 
 From READMEL Visit: http://localhost:5000
 This is not loading. This appears to the the incorrect port.
+
+----------
+
+The deployment was sucessful, and I see the page on GH Pages. What I do not see is the PWA functionality. The screen shows all green checkmarks for PWA status, so what do we need to do to troubleshoot?
+
+----------

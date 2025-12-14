@@ -40,6 +40,20 @@ jobs:
       run: |
         sed -i 's/<base href="\/" \/>/<base href="\/CardioTennisPWA\/" \/>/g' publish/wwwroot/index.html
 
+    - name: Fix service worker registration for GitHub Pages
+      run: |
+        sed -i "s/navigator.serviceWorker.register('service-worker.js'/navigator.serviceWorker.register('\/CardioTennisPWA\/service-worker.js'/g" publish/wwwroot/index.html
+
+    - name: Fix service worker base path
+      run: |
+        sed -i 's/const base = "\/";/const base = "\/CardioTennisPWA\/";/g' publish/wwwroot/service-worker.published.js
+        sed -i 's/const base = "\/";/const base = "\/CardioTennisPWA\/";/g' publish/wwwroot/service-worker.js
+
+    - name: Fix manifest scope and start_url
+      run: |
+        sed -i 's/"start_url": ".\/"/"start_url": "\/CardioTennisPWA\/"/g' publish/wwwroot/manifest.webmanifest
+        sed -i 's/"id": ".\/"/"id": "\/CardioTennisPWA\/"/g' publish/wwwroot/manifest.webmanifest
+
     - name: Add .nojekyll file
       run: touch publish/wwwroot/.nojekyll
 
