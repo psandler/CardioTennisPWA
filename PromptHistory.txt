@@ -130,3 +130,15 @@ No code changes.
 
 Let's do this: "Try the pre-publish approach! It's architecturally cleaner and lets integrity checks work properly."
 Latest changes are committed, so you will need to undo what you did in the last prompt yourself.
+
+
+----------
+
+Still failing SRI integrity checks. Here are the errors:
+Failed to find a valid digest in the 'integrity' attribute for resource 'https://psandler.github.io/CardioTennisPWA/app-config.js' with computed SHA-256 integrity 'TY5N4/1SGUoCKO/qOKYsSdyh62x7xmDxxE6lTzs8Lb0='. The resource has been blocked.Understand this error
+Fetch API cannot load https://psandler.github.io/CardioTennisPWA/app-config.js. SRI's integrity checks failed.Understand this error
+service-worker.js:30 Uncaught (in promise) TypeError: Failed to fetch. SRI's integrity checks failed.
+    at service-worker.js:30:54
+    at async onInstall (service-worker.js:30:5)
+
+Do not fall back to removing integrity checks
