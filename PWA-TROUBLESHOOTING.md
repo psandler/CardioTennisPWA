@@ -110,7 +110,6 @@ The `.github/workflows/deploy.yml` now includes these PWA fixes:
 
 - name: Fix service worker base path
   run: |
-    sed -i 's/const base = "\/";/const base = "\/CardioTennisPWA\/";/g' publish/wwwroot/service-worker.published.js
     sed -i 's/const base = "\/";/const base = "\/CardioTennisPWA\/";/g' publish/wwwroot/service-worker.js
 
 - name: Fix manifest scope and start_url

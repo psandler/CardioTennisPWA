@@ -62,3 +62,11 @@ This is not loading. This appears to the the incorrect port.
 The deployment was sucessful, and I see the page on GH Pages. What I do not see is the PWA functionality. The screen shows all green checkmarks for PWA status, so what do we need to do to troubleshoot?
 
 ----------
+
+Error in last deployment attempt:
+
+Run sed -i 's/const base = "\/";/const base = "\/CardioTennisPWA\/";/g' publish/wwwroot/service-worker.published.js
+sed: can't read publish/wwwroot/service-worker.published.js: No such file or directory
+Error: Process completed with exit code 2.
+
+----------
