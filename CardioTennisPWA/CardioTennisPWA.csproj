@@ -17,29 +17,30 @@
     <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
   </ItemGroup>
 
-  <!-- Copy environment-specific configuration files during publish -->
-  <Target Name="CopyEnvironmentConfig" AfterTargets="Publish">
+  <!-- Copy environment-specific configuration files BEFORE build processes assets -->
+  <Target Name="CopyEnvironmentConfigBeforeBuild" BeforeTargets="ResolveStaticWebAssetsInputs">
+    <!-- Only copy for non-Debug configurations (Release, etc.) -->
     <PropertyGroup>
-      <PublishWwwRoot>$(PublishDir)wwwroot\</PublishWwwRoot>
+      <ShouldCopyConfig Condition="'$(Configuration)' != 'Debug'">true</ShouldCopyConfig>
     </PropertyGroup>
     
     <!-- Copy app-config based on configuration -->
     <Copy 
       SourceFiles="wwwroot\app-config.$(Configuration).js" 
-      DestinationFiles="$(PublishWwwRoot)app-config.js" 
-      Condition="Exists('wwwroot\app-config.$(Configuration).js')"
+      DestinationFiles="wwwroot\app-config.js" 
+      Condition="'$(ShouldCopyConfig)' == 'true' And Exists('wwwroot\app-config.$(Configuration).js')"
       OverwriteReadOnlyFiles="true" />
     
     <!-- Copy manifest based on configuration -->
     <Copy 
       SourceFiles="wwwroot\manifest.$(Configuration).webmanifest" 
-      DestinationFiles="$(PublishWwwRoot)manifest.webmanifest" 
-      Condition="Exists('wwwroot\manifest.$(Configuration).webmanifest')"
+      DestinationFiles="wwwroot\manifest.webmanifest" 
+      Condition="'$(ShouldCopyConfig)' == 'true' And Exists('wwwroot\manifest.$(Configuration).webmanifest')"
       OverwriteReadOnlyFiles="true" />
-    
-    <!-- Remove replaced files from service worker assets manifest (integrity hashes are now invalid) -->
-    <Exec Command="python $(ProjectDir)..\build-scripts\remove-from-sw-assets.py &quot;$(PublishWwwRoot)service-worker-assets.js&quot;" 
-      Condition="Exists('$(PublishWwwRoot)service-worker-assets.js')" />
+      
+    <Message Text="Copied environment config files for $(Configuration) build" 
+             Condition="'$(ShouldCopyConfig)' == 'true'" 
+             Importance="high" />
   </Target>
 
 </Project>

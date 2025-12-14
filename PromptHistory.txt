@@ -125,3 +125,8 @@ Then run the publish / SW manifest generation.
 Now the hash in service-worker-assets.js is for the actual deployed file."
 
 No code changes.
+
+----------
+
+Let's do this: "Try the pre-publish approach! It's architecturally cleaner and lets integrity checks work properly."
+Latest changes are committed, so you will need to undo what you did in the last prompt yourself.

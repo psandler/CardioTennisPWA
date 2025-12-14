@@ -1,173 +1,184 @@
-# Config-Based Environment Configuration ?
+# Config-Based Environment Configuration ? (Pre-Publish Approach)
 
 ## Solution Overview
 
-This is a **true config-based approach** that uses environment-specific configuration files that are swapped at build time via MSBuild. **No post-publish file modifications**, **no integrity hash issues**.
+This is a **true config-based approach** that uses environment-specific configuration files that are copied **BEFORE** Blazor processes assets. This ensures integrity hashes are generated for the actual deployed files.
+
+**Key Difference from Post-Publish Approach:**
+- ? Config files copied **BEFORE** service worker manifest generation
+- ? Integrity hashes calculated for the **correct** (Release) files
+- ? No need to remove files from cache - hashes are valid
+- ? Cleaner, simpler build process
 
 ## How It Works
 
 ### 1. Environment-Specific Configuration Files
 
-**Development (Default):**
-- `wwwroot/app-config.js` - Base URL: `/`
-- `wwwroot/manifest.webmanifest` - Relative paths
+**Development (Debug):**
+- `wwwroot/app-config.Debug.js` - Base URL: `/`
+- `wwwroot/manifest.Debug.webmanifest` - Relative paths
+- These get copied to `app-config.js` and `manifest.webmanifest` for Debug builds
 
 **Production/Release (GitHub Pages):**
 - `wwwroot/app-config.Release.js` - Base URL: `/CardioTennisPWA/`
 - `wwwroot/manifest.Release.webmanifest` - Absolute paths for GitHub Pages
+- These get copied to `app-config.js` and `manifest.webmanifest` for Release builds
+
+**Default Files** (in source control):
+- `wwwroot/app-config.js` - Dev version (baseUrl: "/")
+- `wwwroot/manifest.webmanifest` - Dev version (relative paths)
+- These are **overwritten during non-Debug builds** and restored manually
+- **Added to .gitignore** to prevent committing build-generated versions
 
 ### 2. MSBuild Target (in CardioTennisPWA.csproj)
 
 ```xml
-<Target Name="CopyEnvironmentConfig" AfterTargets="Publish">
-  <!-- Copies app-config.Release.js ? app-config.js -->
-  <!-- Copies manifest.Release.webmanifest ? manifest.webmanifest -->
+<Target Name="CopyEnvironmentConfigBeforeBuild" BeforeTargets="ResolveStaticWebAssetsInputs">
+  <!-- Only copy for non-Debug configurations -->
+  <PropertyGroup>
+    <ShouldCopyConfig Condition="'$(Configuration)' != 'Debug'">true</ShouldCopyConfig>
+  </PropertyGroup>
+  
+  <!-- Copy app-config.$(Configuration).js ? app-config.js -->
+  <!-- Copy manifest.$(Configuration).webmanifest ? manifest.webmanifest -->
+  <!-- This happens BEFORE Blazor processes assets -->
 </Target>
 ```
 
-### 3. Runtime Configuration Loading
+**Key Points:**
+- Runs `BeforeTargets="ResolveStaticWebAssetsInputs"` (early in build process)
+- Copies to **source** `wwwroot/` (not publish output)
+- Only runs for non-Debug configurations (Release, etc.)
+- Files are in place when Blazor generates service worker assets manifest
 
-**index.html:**
-- Loads `app-config.js` **first** in `<head>`
-- Uses `document.write()` to inject `<base href>` **before** HTML parser encounters any `<link>` tags
-- This ensures all resources (CSS, manifest, icons) load from the correct base path
-- Dynamically sets service worker registration path
+### 3. Service Worker Assets Manifest Generation
 
-**Why `document.write()`?**
-- The browser parses HTML sequentially
-- Once it sees a `<link>` tag, it immediately requests that resource
-- We must set `<base href>` **before** the first `<link>` tag
-- `document.write()` executes synchronously during parsing, allowing us to inject the base tag in time
+**What Happens:**
+1. MSBuild target copies Release config files to `wwwroot/`
+2. Blazor's `GenerateServiceWorkerAssetsManifest` task runs
+3. Calculates SHA-256 hash for `app-config.js` (**Release version**)
+4. Adds to `service-worker-assets.js` with **valid hash**
+5. Service worker can cache it without SRI errors!
 
-**service-worker.published.js:**
-- Imports `app-config.js`
-- Uses `self.appConfig.baseUrl` for cache base path
+### 4. Runtime Configuration Loading
 
-## Files Created
+(Same as before - no changes needed to index.html or service worker)
 
-### Configuration Files
-1. `wwwroot/app-config.js` - Dev config (baseUrl: "/")
+## Files Created/Modified
+
+### New Files Created
+1. `wwwroot/app-config.Debug.js` - Dev config (baseUrl: "/")
 2. `wwwroot/app-config.Release.js` - Prod config (baseUrl: "/CardioTennisPWA/")
 3. `wwwroot/appsettings.json` - Blazor config (Dev)
 4. `wwwroot/appsettings.Release.json` - Blazor config (Release)
-5. `wwwroot/manifest.webmanifest` - Dev manifest
+5. `wwwroot/manifest.Debug.webmanifest` - Dev manifest
 6. `wwwroot/manifest.Release.webmanifest` - Prod manifest with absolute paths
-7. `Models/AppSettings.cs` - Config model (optional, for future use)
-8. `build-scripts/remove-from-sw-assets.py` - Removes replaced files from service worker cache manifest
-9. `CONFIG-SOLUTION.md` - Complete documentation
+7. `Models/AppSettings.cs` - Config model (optional)
 
 ### Modified Files
-1. `CardioTennisPWA.csproj` - Added `CopyEnvironmentConfig` MSBuild target
+1. `CardioTennisPWA.csproj` - Added `CopyEnvironmentConfigBeforeBuild` MSBuild target
 2. `wwwroot/index.html` - Loads app-config.js, uses document.write() to inject base href
-3. `wwwroot/service-worker.published.js` - Imports app-config.js, uses baseUrl, excludes app-config.js from cache
+3. `wwwroot/service-worker.published.js` - Imports app-config.js, uses baseUrl (NO exclusion needed!)
 4. `.github/workflows/deploy.yml` - Simplified (just publish, no sed)
+5. `.gitignore` - Added `app-config.js` and `manifest.webmanifest` to ignore list
 
-**MSBuild Target:**
-```xml
-<Target Name="CopyEnvironmentConfig" AfterTargets="Publish">
-  <!-- 1. Copy app-config.Release.js ? app-config.js -->
-  <!-- 2. Copy manifest.Release.webmanifest ? manifest.webmanifest -->
-  <!-- 3. Run Python script to remove replaced files from service worker assets -->
-</Target>
-```
-
-**Python Script** (`build-scripts/remove-from-sw-assets.py`):
-- Parses `service-worker-assets.js`
-- Removes `app-config.js` and `manifest.webmanifest` from assets array
-- These files were replaced, so their integrity hashes are invalid
-- Writes updated manifest back to file
+### Removed Files
+1. ~~`build-scripts/remove-from-sw-assets.py`~~ - No longer needed!
 
 ## Benefits
 
-? **No File Modifications** - Files published exactly as built  
-? **No SRI Errors** - Integrity hashes remain valid  
-? **Clean Separation** - Dev uses `/`, Prod uses `/CardioTennisPWA/`  
-? **MSBuild Native** - Uses standard .NET build system  
-? **Maintainable** - Change repo name? Update one config file  
-? **Testable** - Can publish locally with Release config to verify  
+? **Valid Integrity Hashes** - Files cached with correct SRI checks  
+? **Simpler Build** - No post-publish cleanup needed  
+? **Cleaner** - No Python script, one MSBuild step  
+? **Better Offline** - Config files properly cached by service worker  
+? **Standard .NET** - Uses MSBuild targets correctly  
+? **Easy to Maintain** - Change repo name? Update one config file  
+
+## Tradeoffs
+
+?? **Source files modified during build** - `app-config.js` and `manifest.webmanifest` overwritten  
+?? **Added to .gitignore** - These files ignored to prevent committing build versions  
+?? **Manual restore** - After Release build, dev versions need manual copy (or clean checkout)  
 
 ## How to Use
 
-### Local Development
+### Local Development (Debug)
 ```bash
 dotnet run --project CardioTennisPWA
-# Uses app-config.js (baseUrl: "/")
+# Uses app-config.Debug.js ? app-config.js (baseUrl: "/")
 # Visit http://localhost:5263
 ```
 
-### GitHub Pages Deployment
+### GitHub Pages Deployment (Release)
 ```bash
 git push origin main
 # Workflow publishes with -c Release
-# MSBuild copies app-config.Release.js ? app-config.js
-# MSBuild copies manifest.Release.webmanifest ? manifest.webmanifest
+# MSBuild copies app-config.Release.js ? app-config.js BEFORE asset processing
+# Service worker assets manifest gets correct hash
 # Deployed app uses baseUrl: "/CardioTennisPWA/"
 ```
 
 ### Test Production Build Locally
 ```bash
 dotnet publish -c Release -o publish
-# Check publish/wwwroot/app-config.js
-# Should have baseUrl: "/CardioTennisPWA/"
+# Check publish/wwwroot/service-worker-assets.js
+# Should have app-config.js with valid hash
 ```
 
 ## Configuration Flow
 
 ```
-Development:
-  wwwroot/app-config.js ????????????? Published as-is
-                                       baseUrl: "/"
+Release Build:
+  1. MSBuild target runs (BeforeTargets="ResolveStaticWebAssetsInputs")
+  2. Copies app-config.Release.js ? wwwroot/app-config.js
+  3. Copies manifest.Release.webmanifest ? wwwroot/manifest.webmanifest
+  4. Blazor processes assets
+  5. Generates service-worker-assets.js with hash for Release version
+  6. ? Hash is valid for deployed file!
 
-Release:
-  wwwroot/app-config.Release.js ???
-                                   ???? Copied to app-config.js
-                                   ?    baseUrl: "/CardioTennisPWA/"
-  (original app-config.js ignored) ?
+Debug Build:
+  1. MSBuild target skipped (Configuration == 'Debug')
+  2. Uses existing wwwroot/app-config.js (Dev version)
+  3. Uses existing wwwroot/manifest.webmanifest (Dev version)
+  4. ? Local development works with baseUrl: "/"
 ```
 
-## Manifest Flow
+## Why This is Better Than Post-Publish
 
-```
-Development:
-  wwwroot/manifest.webmanifest ?????? Published as-is
-                                       start_url: "./"
-
-Release:
-  wwwroot/manifest.Release.webmanifest ???
-                                          ???? Copied to manifest.webmanifest
-                                          ?    start_url: "/CardioTennisPWA/"
-  (original manifest.webmanifest ignored)?
-```
-
-## Why This is Better Than Sed Approach
-
-| Aspect | Sed Approach ? | Config Approach ? |
-|--------|----------------|-------------------|
-| **File Modification** | Post-publish | Build-time |
-| **Integrity Hashes** | Broken, need workaround | Remain valid |
-| **Workflow Complexity** | Multiple sed/Python steps | Simple publish |
-| **Maintainability** | Hardcoded in workflow | Config files |
-| **Testability** | Must deploy to test | Can test locally |
-| **.NET Integration** | Shell scripts | Native MSBuild |
+| Aspect | Post-Publish ? | Pre-Publish ? |
+|--------|----------------|----------------|
+| **Integrity Hashes** | Invalid (files modified after) | Valid (calculated for final files) |
+| **Config Cached** | No (excluded from SW cache) | Yes (with valid hash) |
+| **Build Steps** | 2 (copy + remove from manifest) | 1 (copy before build) |
+| **Python Script** | Required | Not needed |
+| **Offline Performance** | Small extra request | Fully cached |
+| **Complexity** | Higher (post-process cleanup) | Lower (standard MSBuild) |
 
 ## Troubleshooting
 
-### Config not copying during publish
+### Config not copying during build
 Check that files exist:
 - `wwwroot/app-config.Release.js`
 - `wwwroot/manifest.Release.webmanifest`
 
 Configuration name must match (Release, Debug, etc.)
 
-### Base href not updating
-Check browser console - `app-config.js` should load before other resources.
-Verify `self.appConfig.baseUrl` is set correctly.
-
-### Service worker errors
-Check that service worker imports `app-config.js`:
-```javascript
-self.importScripts('./app-config.js');
+### Dev versions overwritten after Release build
+This is expected. Restore them:
+```bash
+Copy-Item wwwroot/app-config.Debug.js wwwroot/app-config.js -Force
+Copy-Item wwwroot/manifest.Debug.webmanifest wwwroot/manifest.webmanifest -Force
 ```
+
+Or do a clean git checkout:
+```bash
+git checkout -- CardioTennisPWA/wwwroot/app-config.js
+git checkout -- CardioTennisPWA/wwwroot/manifest.webmanifest
+```
+
+### SRI errors still happening
+Check `service-worker-assets.js` - should have `app-config.js` with a hash.
+If missing, MSBuild target didn't run early enough.
 
 ## Repository Name Change
 
@@ -192,7 +203,7 @@ To change repository name from "CardioTennisPWA" to something else:
 
 ---
 
-**Status**: Clean config-based solution ?  
-**Approach**: Build-time configuration file swapping via MSBuild  
-**SRI Issues**: None - files not modified after publish  
-**Complexity**: Low - standard .NET build patterns
+**Status**: Clean pre-publish config solution ?  
+**Approach**: Copy config files BEFORE asset manifest generation  
+**SRI Issues**: None - integrity hashes are valid  
+**Complexity**: Low - single MSBuild target, no post-processing
