@@ -17,7 +17,9 @@ This is a working Blazor PWA with:
 dotnet run --project CardioTennisPWA
 ```
 
-Visit: http://localhost:5000
+Visit: **http://localhost:5263**
+
+Or run from Visual Studio (F5) - it will open automatically in your browser.
 
 ### Deploy to GitHub Pages
 See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions.

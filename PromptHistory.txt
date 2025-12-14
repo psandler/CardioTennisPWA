@@ -52,3 +52,7 @@ Then let's focus on getting it deployed and deployments working. I intent to use
 
 So quick blazor PWA hello world with local storage, then deployment to GitHub pages (or instructions for the human if needed).
 
+----------
+
+From READMEL Visit: http://localhost:5000
+This is not loading. This appears to the the incorrect port.
