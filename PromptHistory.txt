@@ -157,3 +157,10 @@ Prepare workflow directory
 Prepare all required actions
 Getting action download info
 Error: Unable to resolve action actions/setup-dotenv, repository not found
+
+----------
+
+We'll start from the UI and work backwards toward business logic and data. Let's first clean up all the templated content (counter/weather/etc.) and existing navigation. For now this us truly a single page app.
+
+Let's put a button that says "New Session" in the center of the page. When clicked, it should open a modal dialog (use bootstrap modals) that will eventually contain the session setup options.
+

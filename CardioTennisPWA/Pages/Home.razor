@@ -2,104 +2,49 @@
 @using CardioTennisPWA.Services
 @inject ILocalStorageService LocalStorage
 
-<PageTitle>Cardio Tennis PWA - Hello World</PageTitle>
+<PageTitle>Cardio Tennis</PageTitle>
 
-<div class="container mt-4">
-    <h1>🎾 Cardio Tennis Score Tracker</h1>
-    <p class="lead">Hello World PWA with localStorage Demo</p>
-
-    <div class="card mt-4">
-        <div class="card-body">
-            <h5 class="card-title">localStorage Test</h5>
-            
-            <div class="mb-3">
-                <label for="messageInput" class="form-label">Enter a message:</label>
-                <input type="text" 
-                       class="form-control" 
-                       id="messageInput" 
-                       @bind="message" 
-                       @bind:event="oninput"
-                       placeholder="Type something..." />
-            </div>
-
-            <div class="btn-group mb-3" role="group">
-                <button class="btn btn-primary" @onclick="SaveMessage">
-                    💾 Save to localStorage
-                </button>
-                <button class="btn btn-success" @onclick="LoadMessage">
-                    📂 Load from localStorage
-                </button>
-                <button class="btn btn-danger" @onclick="ClearMessage">
-                    🗑️ Clear
-                </button>
-            </div>
-
-            @if (!string.IsNullOrEmpty(savedMessage))
-            {
-                <div class="alert alert-success" role="alert">
-                    <strong>Saved:</strong> @savedMessage
-                </div>
-            }
-
-            @if (!string.IsNullOrEmpty(loadedMessage))
-            {
-                <div class="alert alert-info" role="alert">
-                    <strong>Loaded from localStorage:</strong> @loadedMessage
-                </div>
-            }
-        </div>
+<div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 100vh;">
+    <div class="text-center mb-4">
+        <h1 class="display-3 mb-3">🎾 Cardio Tennis</h1>
+        <p class="lead text-muted">Score Tracker</p>
     </div>
+    
+    <button class="btn btn-primary btn-lg" @onclick="ShowNewSessionModal">
+        New Session
+    </button>
+</div>
 
-    <div class="card mt-4">
-        <div class="card-body">
-            <h5 class="card-title">PWA Status</h5>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">✅ Blazor WebAssembly</li>
-                <li class="list-group-item">✅ Service Worker registered</li>
-                <li class="list-group-item">✅ PWA manifest configured</li>
-                <li class="list-group-item">✅ localStorage service ready</li>
-                <li class="list-group-item">✅ Offline capable</li>
-            </ul>
+<!-- New Session Modal -->
+<div class="modal fade @(showModal ? "show d-block" : "")" tabindex="-1" style="@(showModal ? "background-color: rgba(0,0,0,0.5);" : "")">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New Session</h5>
+                <button type="button" class="btn-close" @onclick="HideModal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Session setup options will go here...</p>
+                <p class="text-muted small">Courts, players, etc.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="HideModal">Cancel</button>
+                <button type="button" class="btn btn-primary">Start Session</button>
+            </div>
         </div>
     </div>
 </div>
 
 @code {
-    private string message = "";
-    private string savedMessage = "";
-    private string loadedMessage = "";
-    private const string StorageKey = "cardiotennis:demo-message";
+    private bool showModal = false;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private void ShowNewSessionModal()
     {
-        if (firstRender)
-        {
-            await LoadMessage();
-        }
+        showModal = true;
     }
 
-    private async Task SaveMessage()
+    private void HideModal()
     {
-        if (string.IsNullOrWhiteSpace(message))
-            return;
-
-        await LocalStorage.SetItemAsync(StorageKey, message);
-        savedMessage = message;
-        StateHasChanged();
-    }
-
-    private async Task LoadMessage()
-    {
-        loadedMessage = await LocalStorage.GetItemAsync<string>(StorageKey) ?? "(nothing saved yet)";
-        StateHasChanged();
-    }
-
-    private async Task ClearMessage()
-    {
-        await LocalStorage.RemoveItemAsync(StorageKey);
-        message = "";
-        savedMessage = "";
-        loadedMessage = "(cleared)";
-        StateHasChanged();
+        showModal = false;
     }
 }
