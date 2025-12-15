@@ -195,13 +195,16 @@ Round 1, Match 3:
 - **Team**: Players list, wins in current round
 
 ### UI/UX Principles
-- Simple, touch-friendly (coach uses phone/tablet courtside)
+- **Target Platform**: Phone-sized screen (mobile-first design)
+- **Primary Device**: Coach's smartphone used courtside
+- Simple, touch-friendly interface with large tap targets
 - Minimal taps to record match results
 - Clear visual separation of courts and teams
 - Quick access to current scores
 - Show round/match progress clearly (e.g., "Round 2, Match 2")
 - "End Session" always accessible
 - Post-match decision flow is obvious and quick
+- Responsive design: works on phones (primary), tablets, desktop (secondary)
 
 ### Critical UI Flows
 

@@ -164,3 +164,14 @@ We'll start from the UI and work backwards toward business logic and data. Let's
 
 Let's put a button that says "New Session" in the center of the page. When clicked, it should open a modal dialog (use bootstrap modals) that will eventually contain the session setup options.
 
+----------
+
+We should make it more explicit in agents.md that this needs to work on a phone-sized screen. That should be our target.
+
+Let's add a drop down to the modal for number of courts, 1-9 with 2 selected by default. Number of players should default to 8 per court, with both an up/down error and manual text entry. Validation ensures that the number of courts and players is consistent with the min/max players per court. 
+
+----------
+
+Move the @code section to a code behind.
+
+I like the "players per court" that is shown, but replace it with team breakdowns like "2 teams with 3 players, 2 teams with 4 players"

@@ -1,6 +1,4 @@
 ﻿@page "/"
-@using CardioTennisPWA.Services
-@inject ILocalStorageService LocalStorage
 
 <PageTitle>Cardio Tennis</PageTitle>
 
@@ -24,27 +22,53 @@
                 <button type="button" class="btn-close" @onclick="HideModal"></button>
             </div>
             <div class="modal-body">
-                <p>Session setup options will go here...</p>
-                <p class="text-muted small">Courts, players, etc.</p>
+                <!-- Number of Courts -->
+                <div class="mb-3">
+                    <label for="numCourts" class="form-label">Number of Courts</label>
+                    <select class="form-select form-select-lg" id="numCourts" @bind="numCourts" @bind:after="ValidateForm">
+                        @for (int i = 1; i <= 9; i++)
+                        {
+                            <option value="@i">@i</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Number of Players -->
+                <div class="mb-3">
+                    <label for="numPlayers" class="form-label">Total Players</label>
+                    <div class="input-group input-group-lg">
+                        <button class="btn btn-outline-secondary" type="button" @onclick="DecrementPlayers" disabled="@(!canDecrementPlayers)">
+                            <span aria-hidden="true">−</span>
+                        </button>
+                        <input type="number" 
+                               class="form-control text-center @(validationMessage != null ? "is-invalid" : "")" 
+                               id="numPlayers" 
+                               @bind="numPlayers" 
+                               @bind:after="ValidateForm"
+                               min="@minPlayers" 
+                               max="@maxPlayers" />
+                        <button class="btn btn-outline-secondary" type="button" @onclick="IncrementPlayers" disabled="@(!canIncrementPlayers)">
+                            <span aria-hidden="true">+</span>
+                        </button>
+                    </div>
+                    @if (validationMessage != null)
+                    {
+                        <div class="invalid-feedback d-block">
+                            @validationMessage
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-text">
+                            @playersPerCourtText
+                        </div>
+                    }
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" @onclick="HideModal">Cancel</button>
-                <button type="button" class="btn btn-primary">Start Session</button>
+                <button type="button" class="btn btn-primary" @onclick="StartSession" disabled="@(!isFormValid)">Start Session</button>
             </div>
         </div>
     </div>
 </div>
-
-@code {
-    private bool showModal = false;
-
-    private void ShowNewSessionModal()
-    {
-        showModal = true;
-    }
-
-    private void HideModal()
-    {
-        showModal = false;
-    }
-}
