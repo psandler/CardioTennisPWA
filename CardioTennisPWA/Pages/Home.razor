@@ -14,12 +14,12 @@
 </div>
 
 <!-- New Session Modal -->
-<div class="modal fade @(showModal ? "show d-block" : "")" tabindex="-1" style="@(showModal ? "background-color: rgba(0,0,0,0.5);" : "")">
+<div class="modal fade @(showSessionSetupModal ? "show d-block" : "")" tabindex="-1" style="@(showSessionSetupModal ? "background-color: rgba(0,0,0,0.5);" : "")">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">New Session</h5>
-                <button type="button" class="btn-close" @onclick="HideModal"></button>
+                <button type="button" class="btn-close" @onclick="HideSessionSetupModal"></button>
             </div>
             <div class="modal-body">
                 <!-- Number of Courts -->
@@ -66,8 +66,46 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" @onclick="HideModal">Cancel</button>
-                <button type="button" class="btn btn-primary" @onclick="StartSession" disabled="@(!isFormValid)">Start Session</button>
+                <button type="button" class="btn btn-secondary" @onclick="HideSessionSetupModal">Cancel</button>
+                <button type="button" class="btn btn-primary" @onclick="StartGameSession" disabled="@(!isFormValid)">Start Session</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Player Numbering Instructions Modal -->
+<div class="modal fade @(showPlayerNumberingModal ? "show d-block" : "")" tabindex="-1" style="@(showPlayerNumberingModal ? "background-color: rgba(0,0,0,0.5);" : "")">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">
+                    <span class="me-2">📋</span>
+                    Player Numbering
+                </h5>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info mb-3">
+                    <strong>Manual Step:</strong> This happens outside the app
+                </div>
+                
+                <h6 class="mb-3">Instructions for players:</h6>
+                <ol class="mb-4">
+                    <li class="mb-2">Have all <strong>@numPlayers players</strong> gather together</li>
+                    <li class="mb-2">Players count off from <strong>1 to @numPlayers</strong></li>
+                    <li class="mb-2">Each player remembers their number</li>
+                </ol>
+
+                <div class="alert alert-warning mb-0">
+                    <small>
+                        <strong>Note:</strong> Players will use these numbers throughout the session.
+                        Make sure everyone remembers their number!
+                    </small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-lg w-100" @onclick="PlayerNumberingComplete">
+                    Done - Generate Teams
+                </button>
             </div>
         </div>
     </div>

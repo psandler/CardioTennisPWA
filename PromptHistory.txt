@@ -175,3 +175,28 @@ Let's add a drop down to the modal for number of courts, 1-9 with 2 selected by 
 Move the @code section to a code behind.
 
 I like the "players per court" that is shown, but replace it with team breakdowns like "2 teams with 3 players, 2 teams with 4 players"
+
+----------
+
+When Start Session is clicked in the modal, we go back to the main screen. The next step is having the coach assign numbers to players, which is done outside the app. 
+
+A message should be shown, possibly in another model, describing the manual process with a "Done" button, which (again) takes us back to the main screen.
+
+At this point we randomly generate teams based on courts and number of players, which is creating the first set of matches. Let's call 1+ matches with (not against) the same team a "set".
+
+Remember the first match of the first set allows the coach to remix teams.
+
+-----------
+
+I am still reviewing your changes, but let's rename "session" to "gamesession" everywhere. This is to avoid confusion with the web session or browser session. Just this and other changes.
+
+-----------
+
+Sets can be more than 3 matches. Make it 1 to n. Update any code and any docs that had 3 as the max.
+
+Once that is cleaned up, we can start creating views that bind to the models. I think small tabs on the left that are labeled with the set number. 
+The user can click on a set tab to display that set. Set tabs are obviously not created until the set exists.
+Take a shot at designing the details tab for the set.
+
+
+

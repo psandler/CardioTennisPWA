@@ -8,7 +8,11 @@ public partial class Home
     [Inject]
     private ILocalStorageService LocalStorage { get; set; } = default!;
 
-    private bool showModal = false;
+    [Inject]
+    private IGameSessionService GameSessionService { get; set; } = default!;
+
+    private bool showSessionSetupModal = false;
+    private bool showPlayerNumberingModal = false;
     private int numCourts = 2;
     private int numPlayers = 16; // Default: 8 per court with 2 courts
     
@@ -30,12 +34,12 @@ public partial class Home
         numCourts = 2;
         numPlayers = 16;
         ValidateForm();
-        showModal = true;
+        showSessionSetupModal = true;
     }
 
-    private void HideModal()
+    private void HideSessionSetupModal()
     {
-        showModal = false;
+        showSessionSetupModal = false;
     }
 
     private void IncrementPlayers()
@@ -92,9 +96,27 @@ public partial class Home
         }
     }
 
-    private void StartSession()
+    private async Task StartGameSession()
     {
-        // TODO: Create session and navigate to match view
-        HideModal();
+        // Create game session in service
+        await GameSessionService.CreateGameSessionAsync(numCourts, numPlayers);
+        
+        // Hide setup modal
+        showSessionSetupModal = false;
+        
+        // Show player numbering instructions
+        showPlayerNumberingModal = true;
+    }
+
+    private async Task PlayerNumberingComplete()
+    {
+        // Generate initial teams
+        await GameSessionService.GenerateInitialTeamsAsync();
+        
+        // Hide instructions modal
+        showPlayerNumberingModal = false;
+        
+        // TODO: Navigate to match view (for now, just go back to main screen)
+        // In next iteration, we'll show the match view with option to remix teams
     }
 }
