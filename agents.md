@@ -94,10 +94,10 @@ Cardio Tennis is a fun, group tennis activity where players rotate through match
 - Input: Number of players (4-8 players per court)
 - Players physically count off and remember their numbers
 
-#### 2. Round Structure (Flexible 1-3 Match Rounds)
-- **Core Rule**: Teams stay together for **up to 3 consecutive matches**
-- **Flexible**: Coach can end round early after any match (minimum 1)
-- After round ends, new teams are formed
+#### 2. Set Structure (Flexible Matches)
+- **Core Rule**: Teams stay together for **1 or more consecutive matches** (a "set")
+- **Flexible**: Coach decides after each match whether to continue or re-assign teams
+- After set ends, new teams are formed
 - Courts are ranked: **Court 1** (winner/top court) ? **Court N** (loser/bottom court)
 
 #### 3. First Match Assignment (Round 1, Match 1)
@@ -118,17 +118,17 @@ Cardio Tennis is a fun, group tennis activity where players rotate through match
 
 #### 5. Post-Match Decision
 **After each match**, coach chooses:
-- **"Continue with Current Teams"**: Play another match (up to 3 total in round)
+- **"Continue with Current Teams"**: Play another match in current set
   - Triggers court rotation if multiple courts
-  - Disabled after 3rd match in round
-- **"Re-assign Teams"**: End current round, form new teams for next round
+  - Can continue indefinitely until coach decides to re-assign
+- **"Re-assign Teams"**: End current set, form new teams for next set
 
 #### 6. Court Rotation ("Up and Down the Ladder")
-**Applies when**: Coach chooses "Continue with Current Teams" (matches 2 and 3)
+**Applies when**: Coach chooses "Continue with Current Teams" (after any match in the set)
 
 **Single Court:**
 - Teams stay on same court (no rotation needed)
-- Same teams play up to 3 matches in a row
+- Same teams play multiple matches in a row
 
 **Multiple Courts:**
 - **Winners move UP** (toward Court 1)
@@ -137,21 +137,23 @@ Cardio Tennis is a fun, group tennis activity where players rotate through match
 
 **Example with 2 Courts:**
 ```
-Round 1, Match 1:
+Set 1, Match 1:
   Court 1: Team A vs Team B ? Team A wins
   Court 2: Team C vs Team D ? Team C wins
 
 Coach chooses "Continue" ?
 
-Round 1, Match 2:
+Set 1, Match 2:
   Court 1: Team A vs Team C (both won Match 1 - moved up)
   Court 2: Team B vs Team D (both lost Match 1 - moved down)
 
 Coach chooses "Continue" again ?
 
-Round 1, Match 3:
+Set 1, Match 3:
   Court 1: [Winner of Court 1 Match 2] vs [Winner of Court 2 Match 2]
   Court 2: [Loser of Court 1 Match 2] vs [Loser of Court 2 Match 2]
+
+...and so on for as many matches as coach chooses
 ```
 
 **Edge Cases:**
@@ -159,13 +161,13 @@ Round 1, Match 3:
 - Court N losers: Already at bottom, stay at Court N
 - System handles these boundary conditions automatically
 
-#### 7. New Round (After Round Ends)
-- Coach chooses "Re-assign Teams" OR completes 3rd match
+#### 7. New Set (After Set Ends)
+- Coach chooses "Re-assign Teams"
 - Display all player scores
 - System forms new teams (randomized for MVP)
   - **Goal**: Mix teams so everyone plays with everyone equally
   - **OR**: Balance by win/loss for competitive matches
-- Start next round with new team assignments
+- Start next set with new team assignments
 
 #### 8. End Session
 - **"End Session" button** available at all times during session
@@ -187,12 +189,12 @@ Round 1, Match 3:
 - Session duration tracking (for matches-per-hour planning)
 
 ### Key Data Models
-- **Session**: Courts count, total players, session status, current round number
-- **Round**: Round number, matches played (1-3), team assignments, status (active/completed)
+- **GameSession**: Courts count, total players, session status, current set number
+- **MatchSet**: Set number, list of matches (1 to n), team assignments, status (active/completed)
 - **Player**: Number, name (optional), total score
-- **Match**: Match number, round number, court assignments, team assignments, results
+- **Match**: Match number within set, court assignments, team assignments, results
 - **Court**: Court number, Team A players, Team B players, winning team
-- **Team**: Players list, wins in current round
+- **Team**: Players list
 
 ### UI/UX Principles
 - **Target Platform**: Phone-sized screen (mobile-first design)
@@ -215,9 +217,9 @@ Round 1, Match 3:
 
 **Mid-Session (After Match):**
 1. Record match results ? Post-match screen with scores
-2. Choose: Continue (up to 3) OR Re-assign
-3. If Continue: Rotate courts ? Next match
-4. If Re-assign: Form new teams ? Next round
+2. Choose: Continue (with current teams) OR Re-assign (new set)
+3. If Continue: Rotate courts ? Next match in same set
+4. If Re-assign: Form new teams ? Next set
 
 **Anytime:**
 - View Scores ? Return to current match

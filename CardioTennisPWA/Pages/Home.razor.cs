@@ -13,6 +13,7 @@ public partial class Home
 
     private bool showSessionSetupModal = false;
     private bool showPlayerNumberingModal = false;
+    private bool showSetView = false;
     private int numCourts = 2;
     private int numPlayers = 16; // Default: 8 per court with 2 courts
     
@@ -116,7 +117,7 @@ public partial class Home
         // Hide instructions modal
         showPlayerNumberingModal = false;
         
-        // TODO: Navigate to match view (for now, just go back to main screen)
-        // In next iteration, we'll show the match view with option to remix teams
+        // Show set view
+        showSetView = true;
     }
 }

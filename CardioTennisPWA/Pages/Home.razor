@@ -1,17 +1,25 @@
 ﻿@page "/"
+@using CardioTennisPWA.Components
 
 <PageTitle>Cardio Tennis</PageTitle>
 
-<div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 100vh;">
-    <div class="text-center mb-4">
-        <h1 class="display-3 mb-3">🎾 Cardio Tennis</h1>
-        <p class="lead text-muted">Score Tracker</p>
+@if (!showSetView)
+{
+    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 100vh;">
+        <div class="text-center mb-4">
+            <h1 class="display-3 mb-3">🎾 Cardio Tennis</h1>
+            <p class="lead text-muted">Score Tracker</p>
+        </div>
+        
+        <button class="btn btn-primary btn-lg" @onclick="ShowNewSessionModal">
+            New Session
+        </button>
     </div>
-    
-    <button class="btn btn-primary btn-lg" @onclick="ShowNewSessionModal">
-        New Session
-    </button>
-</div>
+}
+else
+{
+    <SetView />
+}
 
 <!-- New Session Modal -->
 <div class="modal fade @(showSessionSetupModal ? "show d-block" : "")" tabindex="-1" style="@(showSessionSetupModal ? "background-color: rgba(0,0,0,0.5);" : "")">
