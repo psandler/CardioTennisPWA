@@ -198,5 +198,29 @@ Once that is cleaned up, we can start creating views that bind to the models. I 
 The user can click on a set tab to display that set. Set tabs are obviously not created until the set exists.
 Take a shot at designing the details tab for the set.
 
+-----------
 
+I would like to split the GameSession Service into two services: a command service and a query service. The command service will handle all operations that modify state, while the query service will handle all read-only operations. 
+I think all data operations can be handled through these two services.
+
+Once that is complete, continue with five of the six of your "Next Steps to Implement" from the last response. Don't implement:
+
+"4.	Wire up "Re-assign Teams" button → Create new set, regenerate teams"
+
+Specifically, what logic would you use to regenerate teams? Skip code changes for #4 but explain your intended approach.
+
+-----------
+
+"**Why this approach?**
+- Query service holds the in-memory `_currentGameSession`
+- Command service needs access to modify it via `SetCurrentGameSession()`
+- Both services share the same instance"
+
+I don't like this at all. I think the current session may need to be managed in a separate service, or possibly in local storage directly. I don't like the idea of sharing state between services. Please rethink this approach.
+
+focus on only this for now
+
+----------
+
+The Team "X" Wins buttons no longer seem to work after this change.
 

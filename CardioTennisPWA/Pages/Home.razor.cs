@@ -6,10 +6,10 @@ namespace CardioTennisPWA.Pages;
 public partial class Home
 {
     [Inject]
-    private ILocalStorageService LocalStorage { get; set; } = default!;
+    private IGameSessionQueryService QueryService { get; set; } = default!;
 
     [Inject]
-    private IGameSessionService GameSessionService { get; set; } = default!;
+    private IGameSessionCommandService CommandService { get; set; } = default!;
 
     private bool showSessionSetupModal = false;
     private bool showPlayerNumberingModal = false;
@@ -100,7 +100,7 @@ public partial class Home
     private async Task StartGameSession()
     {
         // Create game session in service
-        await GameSessionService.CreateGameSessionAsync(numCourts, numPlayers);
+        await CommandService.CreateGameSessionAsync(numCourts, numPlayers);
         
         // Hide setup modal
         showSessionSetupModal = false;
@@ -112,7 +112,7 @@ public partial class Home
     private async Task PlayerNumberingComplete()
     {
         // Generate initial teams
-        await GameSessionService.GenerateInitialTeamsAsync();
+        await CommandService.GenerateInitialTeamsAsync();
         
         // Hide instructions modal
         showPlayerNumberingModal = false;

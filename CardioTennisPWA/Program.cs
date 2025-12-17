@@ -9,6 +9,10 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
-builder.Services.AddScoped<IGameSessionService, GameSessionService>();
+
+// Register query and command services independently
+// Both read/write directly to localStorage (no shared state)
+builder.Services.AddScoped<IGameSessionQueryService, GameSessionQueryService>();
+builder.Services.AddScoped<IGameSessionCommandService, GameSessionCommandService>();
 
 await builder.Build().RunAsync();

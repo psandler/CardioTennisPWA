@@ -1,8 +1,7 @@
 @using CardioTennisPWA.Models
 @using CardioTennisPWA.Services
-@inject IGameSessionService GameSessionService
 
-@if (GameSessionService.CurrentGameSession != null && GameSessionService.CurrentGameSession.Sets.Count > 0)
+@if (currentGameSession != null && currentGameSession.Sets.Count > 0)
 {
     <div class="container-fluid h-100">
         <div class="row h-100">
@@ -13,7 +12,7 @@
                         <h6 class="mb-0">Sets</h6>
                     </div>
                     <div class="flex-grow-1 overflow-auto">
-                        @foreach (var set in GameSessionService.CurrentGameSession.Sets)
+                        @foreach (var set in currentGameSession.Sets)
                         {
                             <button class="btn btn-link text-start w-100 p-3 border-bottom @(selectedSetNumber == set.Number ? "bg-white fw-bold" : "")"
                                     @onclick="() => SelectSet(set.Number)">
@@ -123,8 +122,12 @@
                                                                 @if (!match.IsComplete && court.WinningTeam == null)
                                                                 {
                                                                     <div class="mt-3 d-grid gap-2">
-                                                                        <button class="btn btn-sm btn-outline-success">Team A Wins</button>
-                                                                        <button class="btn btn-sm btn-outline-success">Team B Wins</button>
+                                                                        <button class="btn btn-sm btn-success" @onclick="() => RecordWinner(court.Number, 1)">
+                                                                            Team A Wins
+                                                                        </button>
+                                                                        <button class="btn btn-sm btn-success" @onclick="() => RecordWinner(court.Number, 2)">
+                                                                            Team B Wins
+                                                                        </button>
                                                                     </div>
                                                                 }
                                                             </div>
@@ -139,9 +142,16 @@
                                                 <div class="alert alert-info mt-3">
                                                     <h6>What's next?</h6>
                                                     <div class="d-grid gap-2 d-md-flex">
-                                                        <button class="btn btn-primary">Continue with Current Teams</button>
-                                                        <button class="btn btn-secondary">Re-assign Teams (New Set)</button>
+                                                        <button class="btn btn-primary" @onclick="ContinueWithCurrentTeams">
+                                                            Continue with Current Teams
+                                                        </button>
+                                                        <button class="btn btn-secondary" disabled>
+                                                            Re-assign Teams (New Set)
+                                                        </button>
                                                     </div>
+                                                    <small class="text-muted d-block mt-2">
+                                                        Note: Re-assign Teams functionality will be implemented separately
+                                                    </small>
                                                 </div>
                                             }
                                         </div>
@@ -154,7 +164,7 @@
                         @if (selectedSet.Number == 1 && selectedSet.Matches.Count == 1 && !selectedSet.Matches[0].IsComplete)
                         {
                             <div class="mt-3">
-                                <button class="btn btn-outline-warning">
+                                <button class="btn btn-outline-warning" @onclick="RemixTeams">
                                     <span class="me-2">??</span>
                                     Remix Teams
                                 </button>
