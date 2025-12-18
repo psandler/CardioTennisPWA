@@ -271,3 +271,23 @@ Checkmark problem fixed. accordion still won't open.
 ----------
 
 Nope, still no expanding or collapsing of any kind. Make sure you are checking the latest documentation on how to use the accordian control.
+
+----------
+
+I believe scores are going to have to be shown in a modal, as real estate is already a problem. For the scoreboard AND for the existing player labels, let's use e.g. "P1" instead of "Player1"
+
+Scores should just be a query in the query service I would think?
+
+----------
+
+It appears that all the icons you added are once again showing question marks: "??"
+
+Player numbers ("P1") you added are showing as "P@player.Number". all the same.
+
+----------
+
+You fixed this on the scoreboard but not the main screen:
+
+"Player numbers ("P1") you added are showing as "P@player.Number". all the same."
+
+

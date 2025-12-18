@@ -14,6 +14,9 @@ public partial class SetView
 
     private GameSession? currentGameSession;
     private int selectedSetNumber = 1;
+    private bool showScoresModal = false;
+    private List<Player>? playerStandings;
+    
     private MatchSet? selectedSet => currentGameSession?.Sets
         .FirstOrDefault(s => s.Number == selectedSetNumber);
 
@@ -65,5 +68,16 @@ public partial class SetView
         {
             selectedSetNumber = currentGameSession.CurrentSetNumber;
         }
+    }
+    
+    private async Task ShowScores()
+    {
+        playerStandings = await QueryService.GetPlayerStandingsAsync();
+        showScoresModal = true;
+    }
+    
+    private void HideScoresModal()
+    {
+        showScoresModal = false;
     }
 }
