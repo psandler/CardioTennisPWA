@@ -195,21 +195,103 @@ public class GameSessionCommandService : IGameSessionCommandService
 
     public async Task ReassignTeamsAsync()
     {
-        // TODO: Implement team reassignment logic
-        // This will be explained in the summary without implementation
-        await Task.CompletedTask;
+        var gameSession = await _queryService.GetCurrentGameSessionAsync();
+        if (gameSession == null) return;
+
+        // Mark current set as complete
+        var currentSet = gameSession.Sets.FirstOrDefault(s => s.Number == gameSession.CurrentSetNumber);
+        if (currentSet != null)
+        {
+            currentSet.IsComplete = true;
+        }
+
+        // Create new set with new match
+        var newSetNumber = gameSession.Sets.Count + 1;
+        var newSet = new MatchSet { Number = newSetNumber };
+        var newMatch = new Match { Number = 1 };
+
+        // Use skill-based balancing: rank players by score, then snake draft
+        AssignTeamsBySkillBalance(newMatch, gameSession.Players, gameSession.NumCourts);
+
+        newSet.Matches.Add(newMatch);
+        gameSession.Sets.Add(newSet);
+        gameSession.CurrentSetNumber = newSetNumber;
+
+        await SaveGameSessionAsync(gameSession);
     }
 
-    public async Task EndGameSessionAsync()
+    /// <summary>
+    /// Assigns players to teams using skill-based balancing (snake draft)
+    /// Players are ranked by score, then distributed to balance team strength
+    /// </summary>
+    private void AssignTeamsBySkillBalance(Match match, List<Player> players, int numCourts)
     {
-        var gameSession = await _queryService.GetCurrentGameSessionAsync();
-        if (gameSession != null)
+        var random = new Random();
+        
+        // Sort players by score (descending), then random tiebreaker
+        var rankedPlayers = players
+            .OrderByDescending(p => p.Score)
+            .ThenBy(p => random.Next())
+            .ToList();
+
+        // Create teams (2 per court)
+        int totalTeams = numCourts * 2;
+        var teams = new List<List<int>>();
+        for (int i = 0; i < totalTeams; i++)
         {
-            gameSession.IsActive = false;
-            await SaveGameSessionAsync(gameSession);
+            teams.Add(new List<int>());
+        }
+
+        // Snake draft: 1->2->3->4->4->3->2->1->1->2...
+        bool forward = true;
+        int teamIndex = 0;
+
+        foreach (var player in rankedPlayers)
+        {
+            teams[teamIndex].Add(player.Number);
+
+            // Move to next team
+            if (forward)
+            {
+                teamIndex++;
+                if (teamIndex >= totalTeams)
+                {
+                    teamIndex = totalTeams - 1;
+                    forward = false;
+                }
+            }
+            else
+            {
+                teamIndex--;
+                if (teamIndex < 0)
+                {
+                    teamIndex = 0;
+                    forward = true;
+                }
+            }
+        }
+
+        // Assign teams to courts
+        for (int courtNum = 1; courtNum <= numCourts; courtNum++)
+        {
+            var court = new Court { Number = courtNum };
+            
+            int teamAIndex = (courtNum - 1) * 2;
+            int teamBIndex = teamAIndex + 1;
+
+            court.TeamA.PlayerNumbers = teams[teamAIndex];
+            if (teamBIndex < teams.Count)
+            {
+                court.TeamB.PlayerNumbers = teams[teamBIndex];
+            }
+
+            match.Courts.Add(court);
         }
     }
 
+    /// <summary>
+    /// Assigns players to match randomly with balanced team sizes
+    /// </summary>
     private void AssignPlayersToMatch(Match match, List<Player> players, int numCourts)
     {
         var availablePlayers = players.Select(p => p.Number).ToList();
@@ -244,6 +326,16 @@ public class GameSessionCommandService : IGameSessionCommandService
             }
 
             match.Courts.Add(court);
+        }
+    }
+
+    public async Task EndGameSessionAsync()
+    {
+        var gameSession = await _queryService.GetCurrentGameSessionAsync();
+        if (gameSession != null)
+        {
+            gameSession.IsActive = false;
+            await SaveGameSessionAsync(gameSession);
         }
     }
 

@@ -1,5 +1,6 @@
 @using CardioTennisPWA.Models
 @using CardioTennisPWA.Services
+@using Microsoft.AspNetCore.Components
 
 @if (currentGameSession != null && currentGameSession.Sets.Count > 0)
 {
@@ -22,6 +23,10 @@
                                 </div>
                                 <small class="text-muted d-block mt-1">
                                     @set.Matches.Count match@(set.Matches.Count != 1 ? "es" : "")
+                                    @if (set.IsComplete)
+                                    {
+                                        <span class="badge bg-success ms-1">@(new MarkupString("&#10003;"))</span>
+                                    }
                                 </small>
                             </button>
                         }
@@ -47,118 +52,124 @@
                         </div>
 
                         <!-- Matches in this set -->
-                        <div class="accordion" id="accordionMatches">
-                            @foreach (var match in selectedSet.Matches)
-                            {
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading-@match.Number">
-                                        <button class="accordion-button @(match.Number == selectedSet.Matches.Count ? "" : "collapsed")"
+                        @foreach (var match in selectedSet.Matches)
+                        {
+                            var isLatestMatch = match.Number == selectedSet.Matches.Count && !selectedSet.IsComplete;
+                            var collapseId = $"collapse-set{selectedSet.Number}-match{match.Number}";
+                            
+                            <div class="card mb-2">
+                                <div class="card-header" id="heading-set@(selectedSet.Number)-match@(match.Number)">
+                                    <h5 class="mb-0">
+                                        <button class="btn btn-link text-decoration-none w-100 text-start d-flex justify-content-between align-items-center @(isLatestMatch ? "" : "collapsed")"
                                                 type="button"
                                                 data-bs-toggle="collapse"
-                                                data-bs-target="#collapse-@match.Number"
-                                                aria-expanded="@(match.Number == selectedSet.Matches.Count ? "true" : "false")"
-                                                aria-controls="collapse-@match.Number">
-                                            <strong>Match @match.Number</strong>
-                                            @if (match.IsComplete)
-                                            {
-                                                <span class="badge bg-success ms-2">? Complete</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-warning ms-2">In Progress</span>
-                                            }
-                                        </button>
-                                    </h2>
-                                    <div id="collapse-@match.Number"
-                                         class="accordion-collapse collapse @(match.Number == selectedSet.Matches.Count ? "show" : "")"
-                                         aria-labelledby="heading-@match.Number"
-                                         data-bs-parent="#accordionMatches">
-                                        <div class="accordion-body">
-                                            <!-- Courts for this match -->
-                                            <div class="row g-3">
-                                                @foreach (var court in match.Courts)
+                                                data-bs-target="#@collapseId"
+                                                aria-expanded="@(isLatestMatch ? "true" : "false")"
+                                                aria-controls="@collapseId">
+                                            <div>
+                                                <strong>Match @match.Number</strong>
+                                                @if (match.IsComplete)
                                                 {
-                                                    <div class="col-12 col-md-6 col-lg-4">
-                                                        <div class="card @(court.WinningTeam.HasValue ? "border-success" : "")">
-                                                            <div class="card-header bg-light">
-                                                                <strong>Court @court.Number</strong>
-                                                            </div>
-                                                            <div class="card-body">
-                                                                <!-- Team A -->
-                                                                <div class="mb-3 p-2 @(court.WinningTeam == 1 ? "bg-success bg-opacity-10 border border-success rounded" : "")">
-                                                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                                                        <strong>Team A</strong>
-                                                                        @if (court.WinningTeam == 1)
-                                                                        {
-                                                                            <span class="badge bg-success">Winner</span>
-                                                                        }
-                                                                    </div>
-                                                                    <div class="d-flex flex-wrap gap-1">
-                                                                        @foreach (var playerNum in court.TeamA.PlayerNumbers)
-                                                                        {
-                                                                            <span class="badge bg-primary">Player @playerNum</span>
-                                                                        }
-                                                                    </div>
-                                                                </div>
-
-                                                                <!-- Team B -->
-                                                                <div class="p-2 @(court.WinningTeam == 2 ? "bg-success bg-opacity-10 border border-success rounded" : "")">
-                                                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                                                        <strong>Team B</strong>
-                                                                        @if (court.WinningTeam == 2)
-                                                                        {
-                                                                            <span class="badge bg-success">Winner</span>
-                                                                        }
-                                                                    </div>
-                                                                    <div class="d-flex flex-wrap gap-1">
-                                                                        @foreach (var playerNum in court.TeamB.PlayerNumbers)
-                                                                        {
-                                                                            <span class="badge bg-primary">Player @playerNum</span>
-                                                                        }
-                                                                    </div>
-                                                                </div>
-
-                                                                <!-- Record Result Buttons (if match not complete) -->
-                                                                @if (!match.IsComplete && court.WinningTeam == null)
-                                                                {
-                                                                    <div class="mt-3 d-grid gap-2">
-                                                                        <button class="btn btn-sm btn-success" @onclick="() => RecordWinner(court.Number, 1)">
-                                                                            Team A Wins
-                                                                        </button>
-                                                                        <button class="btn btn-sm btn-success" @onclick="() => RecordWinner(court.Number, 2)">
-                                                                            Team B Wins
-                                                                        </button>
-                                                                    </div>
-                                                                }
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                    <span class="badge bg-success ms-2">@(new MarkupString("&#10003;")) Complete</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-warning ms-2">In Progress</span>
                                                 }
                                             </div>
+                                        </button>
+                                    </h5>
+                                </div>
 
-                                            <!-- Post-Match Actions (if match is complete but set not complete) -->
-                                            @if (match.IsComplete && !selectedSet.IsComplete && match.Number == selectedSet.Matches.Count)
+                                <div id="@collapseId"
+                                     class="collapse @(isLatestMatch ? "show" : "")"
+                                     aria-labelledby="heading-set@(selectedSet.Number)-match@(match.Number)">
+                                    <div class="card-body">
+                                        <!-- Courts for this match -->
+                                        <div class="row g-3">
+                                            @foreach (var court in match.Courts)
                                             {
-                                                <div class="alert alert-info mt-3">
-                                                    <h6>What's next?</h6>
-                                                    <div class="d-grid gap-2 d-md-flex">
-                                                        <button class="btn btn-primary" @onclick="ContinueWithCurrentTeams">
-                                                            Continue with Current Teams
-                                                        </button>
-                                                        <button class="btn btn-secondary" disabled>
-                                                            Re-assign Teams (New Set)
-                                                        </button>
+                                                <div class="col-12 col-md-6 col-lg-4">
+                                                    <div class="card @(court.WinningTeam.HasValue ? "border-success" : "")">
+                                                        <div class="card-header bg-light">
+                                                            <strong>Court @court.Number</strong>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <!-- Team A -->
+                                                            <div class="mb-3 p-2 @(court.WinningTeam == 1 ? "bg-success bg-opacity-10 border border-success rounded" : "")">
+                                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                                    <strong>Team A</strong>
+                                                                    @if (court.WinningTeam == 1)
+                                                                    {
+                                                                        <span class="badge bg-success">Winner</span>
+                                                                    }
+                                                                </div>
+                                                                <div class="d-flex flex-wrap gap-1">
+                                                                    @foreach (var playerNum in court.TeamA.PlayerNumbers)
+                                                                    {
+                                                                        <span class="badge bg-primary">Player @playerNum</span>
+                                                                    }
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- Team B -->
+                                                            <div class="p-2 @(court.WinningTeam == 2 ? "bg-success bg-opacity-10 border border-success rounded" : "")">
+                                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                                    <strong>Team B</strong>
+                                                                    @if (court.WinningTeam == 2)
+                                                                    {
+                                                                        <span class="badge bg-success">Winner</span>
+                                                                    }
+                                                                </div>
+                                                                <div class="d-flex flex-wrap gap-1">
+                                                                    @foreach (var playerNum in court.TeamB.PlayerNumbers)
+                                                                    {
+                                                                        <span class="badge bg-primary">Player @playerNum</span>
+                                                                    }
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- Record Result Buttons (if match not complete) -->
+                                                            @if (!match.IsComplete && court.WinningTeam == null)
+                                                            {
+                                                                <div class="mt-3 d-grid gap-2">
+                                                                    <button class="btn btn-sm btn-success" @onclick="() => RecordWinner(court.Number, 1)">
+                                                                        Team A Wins
+                                                                    </button>
+                                                                    <button class="btn btn-sm btn-success" @onclick="() => RecordWinner(court.Number, 2)">
+                                                                        Team B Wins
+                                                                    </button>
+                                                                </div>
+                                                            }
+                                                        </div>
                                                     </div>
-                                                    <small class="text-muted d-block mt-2">
-                                                        Note: Re-assign Teams functionality will be implemented separately
-                                                    </small>
                                                 </div>
                                             }
                                         </div>
+
+                                        <!-- Post-Match Actions (only show if match is complete and set is NOT complete) -->
+                                        @if (match.IsComplete && !selectedSet.IsComplete && match.Number == selectedSet.Matches.Count)
+                                        {
+                                            <div class="alert alert-info mt-3">
+                                                <h6>What's next?</h6>
+                                                <div class="d-grid gap-2 d-md-flex">
+                                                    <button class="btn btn-primary" @onclick="ContinueWithCurrentTeams">
+                                                        Continue with Current Teams
+                                                    </button>
+                                                    <button class="btn btn-success" @onclick="ReassignTeams">
+                                                        Re-assign Teams (New Set)
+                                                    </button>
+                                                </div>
+                                                <small class="text-muted d-block mt-2">
+                                                    <strong>Continue:</strong> Same teams rotate courts ("up and down the ladder")<br />
+                                                    <strong>Re-assign:</strong> New teams balanced by scores (snake draft)
+                                                </small>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
-                            }
-                        </div>
+                            </div>
+                        }
 
                         <!-- Remix Teams Button (first match only, before it starts) -->
                         @if (selectedSet.Number == 1 && selectedSet.Matches.Count == 1 && !selectedSet.Matches[0].IsComplete)

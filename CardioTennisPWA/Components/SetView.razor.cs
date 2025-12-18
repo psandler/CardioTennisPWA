@@ -26,10 +26,10 @@ public partial class SetView
     {
         currentGameSession = await QueryService.GetCurrentGameSessionAsync();
         
-        // Select the first set by default
+        // Select the current set by default (or first if current not found)
         if (currentGameSession?.Sets.Count > 0)
         {
-            selectedSetNumber = currentGameSession.Sets[0].Number;
+            selectedSetNumber = currentGameSession.CurrentSetNumber;
         }
     }
 
@@ -54,5 +54,16 @@ public partial class SetView
     {
         await CommandService.ContinueWithCurrentTeamsAsync();
         await LoadGameSessionAsync();
+    }
+    
+    private async Task ReassignTeams()
+    {
+        await CommandService.ReassignTeamsAsync();
+        await LoadGameSessionAsync();
+        // Auto-select the newly created set
+        if (currentGameSession != null)
+        {
+            selectedSetNumber = currentGameSession.CurrentSetNumber;
+        }
     }
 }

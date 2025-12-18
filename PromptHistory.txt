@@ -224,3 +224,50 @@ focus on only this for now
 
 The Team "X" Wins buttons no longer seem to work after this change.
 
+----------
+
+Continue with this for team reassignment logic:
+
+"Option 2: Skill Balancing
+•	Rank players by score
+•	Snake draft alternating assignment
+•	Creates competitive balanced matches"
+
+Also, right now you can't view a completed match by de-collapsing it, which makes it hard to test the team switching between matches.
+
+Also, let's create a todo of what is left to complete the MVP, based on your understanding of where we are.
+
+Finally, let's update documentation, including the readme and requirements documents on where we are.
+
+
+----------
+
+"// Sort players by score (descending), then by number (ascending) for tiebreaker
+var rankedPlayers = players
+    .OrderByDescending(p => p.Score)
+    .ThenBy(p => p.Number)
+    .ToList();"
+
+The tiebreaker should be random. Fix.
+
+Also, the accordian still does not open for completed matches. Make this work, even if it means you have to collapse the current match when opening a completed one.
+
+Reassign teams grey color makes it look disabled.
+Reassign teams button and continue with current teams should disappear when re-assign has been chosen (as that is a new set).
+Details screen should select the newly created set when re-assign is clicked.
+When Reassign is clicked, this essentially closes the current set.
+
+----------
+
+The accordian still does not open for completed matches.
+Completed badges show "? Completed"
+
+Let's focus on this until we can resolve it.
+
+----------
+
+Checkmark problem fixed. accordion still won't open.
+
+----------
+
+Nope, still no expanding or collapsing of any kind. Make sure you are checking the latest documentation on how to use the accordian control.
