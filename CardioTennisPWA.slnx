@@ -1,7 +1,8 @@
 <Solution>
   <Folder Name="/SolutionFiles/">
-    <File Path="HumanNotes.txt" />
+    <File Path="HumanNotes.md" />
     <File Path="PromptHistory.txt" />
+    <File Path="README.md" />
   </Folder>
   <Folder Name="/Test/" />
   <Project Path="CardioTennisPWA/CardioTennisPWA.csproj" />
