@@ -13,8 +13,9 @@
 
 ### PromptHistory.txt
 
-- This is the complete prompt history for the project.
-	- There were a few minor exceptions when I had to re-prompt due to technical issues (e.g., a lost connection). In those cases, I have omitted the re-prompts.
+- This is the complete prompt history for the project. All the code and documentation was generated from these prompts. I have not edited or removed any prompts, except as noted below.
+	- There were a few cases where had to re-prompt due to technical issues (e.g., a frozen chat). In those cases, I have omitted the re-prompts.
 	- I also used a "side chat" (ChatGPT Desktop) when I needed answers to high-level questions. I did not record those prompts.
 - Each sent prompt is separated by a row of dashes ("-----").
 - Commit boundaries do not necessarily align with prompt boundaries.
+

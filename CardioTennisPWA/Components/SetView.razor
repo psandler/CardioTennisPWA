@@ -34,8 +34,20 @@
 
                     <!-- View Scores Button at Bottom -->
                     <div class="p-3 border-top">
-                        <button class="btn btn-warning w-100" @onclick="ShowScores">
+                        <button class="btn btn-warning w-100 mb-2" @onclick="ShowScores">
                             View Scores
+                        </button>
+                        <button class="btn btn-danger w-100" 
+                                @onclick="ShowEndSessionConfirmation" 
+                                disabled="@(!canEndSession || isEndingSession)">
+                            @if (isEndingSession)
+                            {
+                                <span>Ending...</span>
+                            }
+                            else
+                            {
+                                <span>End Session</span>
+                            }
                         </button>
                     </div>
                 </div>
@@ -210,3 +222,28 @@ else
 <PlayerScoresModal IsVisible="@showScoresModal" 
                    Players="@playerStandings" 
                    OnClose="@HideScoresModal" />
+
+<!-- End Session Confirmation Modal -->
+<div class="modal fade @(showEndSessionConfirmation ? "show d-block" : "")" tabindex="-1" style="@(showEndSessionConfirmation ? "background-color: rgba(0,0,0,0.5);" : "")">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Confirm End Session</h5>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to end this session?</p>
+                <p class="text-muted">Final scores will be displayed and the session will be marked as complete.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="CancelEndSession">Cancel</button>
+                <button type="button" class="btn btn-danger" @onclick="ConfirmEndSession">End Session</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Final Scores Modal -->
+<FinalScoresModal IsVisible="@showFinalScoresModal" 
+                  Players="@playerStandings" 
+                  TotalMatches="@totalMatchesPlayed"
+                  OnClose="@CloseFinalScores" />

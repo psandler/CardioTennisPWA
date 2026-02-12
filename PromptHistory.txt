@@ -290,4 +290,69 @@ You fixed this on the scoreboard but not the main screen:
 
 "Player numbers ("P1") you added are showing as "P@player.Number". all the same."
 
+----------
 
+Let's move forward with:
+"End Session button accessible at all times." However, disable it if one court has reported a winner in the current match. If no one has reported a winner yet, it can be clicked.
+  Confirmation dialog before ending
+  Show the final score screen (make it clear closing it is the final look at it). Closing the final score screen returns to home.
+  The database record should not be cleared, but kept for history. It should be marked as completed.  
+
+"Session Resume on App Load"
+
+ Check localStorage for incomplete session on app start 
+ If found (and can be loaded successfully), show current session view
+ If not found, show "New Session" button
+
+ "Error Handling & Validation"
+ On home screen: show local storage usage and button to clear storage
+ User-friendly error messages
+ Maybe: error message dialog allows for killing session and starting a new one.
+ 
+ ----------
+
+ I don't see storage usage or a button to clear storage on the home page.
+
+ Not really a problem, but why does the date on the SESSION-MANAGEMENT-IMPLEMENTATION.md "December 14, 2024"?
+
+ ----------
+
+ Storage always reads:
+ 
+ "Storage: 0.00 MB / 571403 MB (0.0%)"
+
+ Do we clear everything when the session ends, or move the session data to another key in localstorage? In other words, archive it?
+
+ IF we're NOT doing that, it's ok, let's leave it like that, but remove this concept of clearing local storage if we clear it when ending the session anyway.
+ We can take that back off the homepage and remove the size check from the local storage service. We can add it back later if we start archiving sessions in local storage.
+
+ If we ARE doing that and the session data is so small that it doesn't register in the storage estimate, let's leave the functionality as it is.
+
+ ----------
+
+ "My recommendation is #2 - improve the display to show KB when under 1 MB, so users can see the data is actually there. What would you prefer?"
+
+ Let's go with your recommendation of #2.
+
+ ----------
+
+ The storage always shows "0.30KB / 571403 MB (0.0%)" regardless of how many sessions I complete.
+ Setting a breakpoint after running several sessions always shows the same value for storageUsed: 303.
+
+ ----------
+
+ storageUsed is now always 0.
+
+ ----------
+
+ Running getLocalStorageSize() in the dev tools console:
+ 
+ The size returned varies with number of players for the active or completed session. 
+ It resets every session, so after starting a session with 24 players it will return 3098. If you then create a session with 16 players it will return a result of 2216.
+ After clicking Clearing All Data it returns 0.
+
+ So I can only conclude that it does not store past sessions. I think this is fine. With even the max number of players, the size isn't going to get out of hand. We don't need this feature for this version.
+
+ Proceed with removing the display of storage used and maximum storage, and the button that clears all data. Remove any services or service calls that are not used elsewhere.
+
+ Next steps are clean up the UI so it can be used on a phone. Don't start coding that yet, but  give me things you think are wrong with the current UI (if any) and how you would fix them.

@@ -11,9 +11,15 @@ public partial class Home
     [Inject]
     private IGameSessionCommandService CommandService { get; set; } = default!;
 
+    [Inject]
+    private ILocalStorageService LocalStorage { get; set; } = default!;
+
     private bool showSessionSetupModal = false;
     private bool showPlayerNumberingModal = false;
     private bool showSetView = false;
+    private bool isLoadingSession = true;
+    private string? errorMessage = null;
+    private bool showErrorDialog = false;
     private int numCourts = 2;
     private int numPlayers = 16; // Default: 8 per court with 2 courts
     
@@ -28,6 +34,31 @@ public partial class Home
     private string? validationMessage;
     private bool isFormValid => validationMessage == null;
     private string playersPerCourtText = "";
+    
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            isLoadingSession = true;
+            var activeSession = await QueryService.GetCurrentGameSessionAsync();
+            
+            if (activeSession != null && activeSession.IsActive)
+            {
+                // Resume active session
+                showSetView = true;
+            }
+            
+            errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading session: {ex.Message}";
+        }
+        finally
+        {
+            isLoadingSession = false;
+        }
+    }
 
     private void ShowNewSessionModal()
     {
@@ -119,5 +150,40 @@ public partial class Home
         
         // Show set view
         showSetView = true;
+    }
+    
+    private void HandleSessionEnded()
+    {
+        showSetView = false;
+    }
+    
+    private async Task ClearLocalStorage()
+    {
+        try
+        {
+            await LocalStorage.ClearAsync();
+            errorMessage = null;
+            showSetView = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error clearing storage: {ex.Message}";
+        }
+    }
+    
+    private async Task ForceEndSession()
+    {
+        try
+        {
+            await CommandService.EndGameSessionAsync();
+            showErrorDialog = false;
+            showSetView = false;
+            errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error ending session: {ex.Message}";
+        }
     }
 }
