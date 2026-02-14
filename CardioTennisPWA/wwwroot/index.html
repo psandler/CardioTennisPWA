@@ -41,6 +41,32 @@
     <script src="lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>
     <script>
+        // Scroll tab container left/right
+        window.scrollTabsBy = function(element, amount) {
+            element.scrollBy({ left: amount, behavior: 'smooth' });
+        };
+        
+        // Update scroll indicators based on position
+        window.updateScrollIndicators = function(element) {
+            const wrapper = element.closest('.set-tabs-wrapper');
+            if (wrapper && window.innerWidth < 768) {
+                const scrollLeft = element.scrollLeft;
+                const maxScroll = element.scrollWidth - element.clientWidth;
+                
+                if (scrollLeft > 10) {
+                    wrapper.classList.add('scrolled-left');
+                } else {
+                    wrapper.classList.remove('scrolled-left');
+                }
+                
+                if (scrollLeft >= maxScroll - 10) {
+                    wrapper.classList.add('scrolled-right');
+                } else {
+                    wrapper.classList.remove('scrolled-right');
+                }
+            }
+        };
+        
         // Register service worker with config-aware path
         var swPath = (self.appConfig && self.appConfig.baseUrl) 
             ? self.appConfig.baseUrl + 'service-worker.js' 

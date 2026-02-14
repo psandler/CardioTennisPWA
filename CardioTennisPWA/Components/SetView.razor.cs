@@ -1,6 +1,7 @@
 using CardioTennisPWA.Models;
 using CardioTennisPWA.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace CardioTennisPWA.Components;
 
@@ -11,6 +12,9 @@ public partial class SetView
     
     [Inject]
     private IGameSessionCommandService CommandService { get; set; } = default!;
+    
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = default!;
     
     [Parameter]
     public EventCallback OnSessionEnded { get; set; }
@@ -23,6 +27,7 @@ public partial class SetView
     private List<Player>? playerStandings;
     private bool isEndingSession = false;
     private int totalMatchesPlayed = 0;
+    private ElementReference tabsContainer;
     
     private MatchSet? selectedSet => currentGameSession?.Sets
         .FirstOrDefault(s => s.Number == selectedSetNumber);
@@ -49,6 +54,15 @@ public partial class SetView
     protected override async Task OnInitializedAsync()
     {
         await LoadGameSessionAsync();
+    }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && tabsContainer.Id != null)
+        {
+            // Initialize scroll indicators
+            await JSRuntime.InvokeVoidAsync("updateScrollIndicators", tabsContainer);
+        }
     }
 
     private async Task LoadGameSessionAsync()
@@ -146,5 +160,20 @@ public partial class SetView
     {
         showFinalScoresModal = false;
         await OnSessionEnded.InvokeAsync();
+    }
+    
+    private async Task ScrollTabsLeft()
+    {
+        await JSRuntime.InvokeVoidAsync("scrollTabsBy", tabsContainer, -150);
+    }
+    
+    private async Task ScrollTabsRight()
+    {
+        await JSRuntime.InvokeVoidAsync("scrollTabsBy", tabsContainer, 150);
+    }
+    
+    private async Task HandleTabsScroll()
+    {
+        await JSRuntime.InvokeVoidAsync("updateScrollIndicators", tabsContainer);
     }
 }

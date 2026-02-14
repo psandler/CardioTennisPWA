@@ -356,3 +356,58 @@ Let's move forward with:
  Proceed with removing the display of storage used and maximum storage, and the button that clears all data. Remove any services or service calls that are not used elsewhere.
 
  Next steps are clean up the UI so it can be used on a phone. Don't start coding that yet, but  give me things you think are wrong with the current UI (if any) and how you would fix them.
+
+ ----------
+
+ Proceed with option "2.Start with top 3 critical issues (sidebar, buttons, stacking)"
+
+ ----------
+
+ The only problem I currently see: the horizontal scrolling of the tabs on top have a few problems on mobile view. 
+ 
+ The scrollbar not always visible. It seems to disappear after using it once. Sometimes it still works and is visibile when you click on it and scroll.
+ 
+ It also seems to disappear and stop working completely once a tab has been clicked on for the first time.
+
+ ----------
+
+ The scrollbar still disappears after using it. Fix just this for now.
+
+ ----------
+
+ It still disappears after one use, testing in developer mode in Chrome. Is there another option besides a scroll bar that makes it clear the tabs are scrollable?
+
+ ----------
+
+ The right arrow is always visible, and clicking it throws errors in the chrome devtools debugger. This error is in the console, and the yelklow blazor crash ribbon at the bottom with "Reload" is shown:
+
+ blazor.webassembly.66stpp682q.js:1 crit: Microsoft.AspNetCore.Components.WebAssembly.Rendering.WebAssemblyRenderer[100]
+      Unhandled exception rendering component: arguments is not defined
+      ReferenceError: arguments is not defined
+          at eval (eval at processJSCall (https://localhost:7124/_framework/blazor.webassembly.66stpp682q.js:1:4452), <anonymous>:2:31)
+          at eval (<anonymous>)
+          at w.processJSCall (https://localhost:7124/_framework/blazor.webassembly.66stpp682q.js:1:4452)
+          at w.beginInvokeJSFromDotNet (https://localhost:7124/_framework/blazor.webassembly.66stpp682q.js:1:4129)
+          at Object.Qt [as invokeJSJson] (https://localhost:7124/_framework/blazor.webassembly.66stpp682q.js:1:58855)
+          at https://localhost:7124/_framework/dotnet.runtime.2tx45g8lli.js:3:34586
+          at Mc (https://localhost:7124/_framework/dotnet.runtime.2tx45g8lli.js:3:175836)
+          at https://localhost:7124/_framework/dotnet.native.befq3iek54.wasm:wasm-function[298]:0x1f798
+          at https://localhost:7124/_framework/dotnet.native.befq3iek54.wasm:wasm-function[222]:0x1ca99
+          at https://localhost:7124/_framework/dotnet.native.befq3iek54.wasm:wasm-function[213]:0xebe8
+Microsoft.JSInterop.JSException: arguments is not defined
+ReferenceError: arguments is not defined
+    at eval (eval at processJSCall (https://localhost:7124/_framework/blazor.webassembly.66stpp682q.js:1:4452), <anonymous>:2:31)
+    at eval (<anonymous>)
+    at w.processJSCall (https://localhost:7124/_framework/blazor.webassembly.66stpp682q.js:1:4452)
+    at w.beginInvokeJSFromDotNet (https://localhost:7124/_framework/blazor.webassembly.66stpp682q.js:1:4129)
+    at Object.Qt [as invokeJSJson] (https://localhost:7124/_framework/blazor.webassembly.66stpp682q.js:1:58855)
+    at https://localhost:7124/_framework/dotnet.runtime.2tx45g8lli.js:3:34586
+    at Mc (https://localhost:7124/_framework/dotnet.runtime.2tx45g8lli.js:3:175836)
+    at https://localhost:7124/_framework/dotnet.native.befq3iek54.wasm:wasm-function[298]:0x1f798
+    at https://localhost:7124/_framework/dotnet.native.befq3iek54.wasm:wasm-function[222]:0x1ca99
+    at https://localhost:7124/_framework/dotnet.native.befq3iek54.wasm:wasm-function[213]:0xebe8
+   at Microsoft.JSInterop.JSRuntime.<InvokeAsync>d__23`1[[Microsoft.JSInterop.Infrastructure.IJSVoidResult, Microsoft.JSInterop, Version=10.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60]].MoveNext()
+   at Microsoft.JSInterop.JSRuntimeExtensions.InvokeVoidAsync(IJSRuntime jsRuntime, String identifier, Object[] args)
+   at CardioTennisPWA.Components.SetView.ScrollTabsRight() in C:\projects\CardioTennisPWA\CardioTennisPWA\Components\SetView.razor.cs:line 166
+   at Microsoft.AspNetCore.Components.ComponentBase.CallStateHasChangedOnAsyncCompletion(Task task)
+   at Microsoft.AspNetCore.Components.RenderTree.Renderer.GetErrorHandledTask(Task taskToHandle, ComponentState owningComponentState)

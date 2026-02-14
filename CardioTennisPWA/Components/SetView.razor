@@ -5,18 +5,44 @@
 @if (currentGameSession != null && currentGameSession.Sets.Count > 0)
 {
     <div class="container-fluid h-100">
-        <div class="row h-100">
-            <!-- Left Sidebar: Set Tabs -->
-            <div class="col-2 bg-light border-end p-0">
-                <div class="d-flex flex-column h-100">
-                    <div class="p-3 border-bottom bg-primary text-white">
+        <div class="row h-100 flex-column flex-md-row">
+            <!-- Set Tabs: Horizontal on mobile, Vertical sidebar on desktop -->
+            <div class="col-12 col-md-3 col-lg-2 bg-light border-bottom border-md-end p-0">
+                <div class="d-flex flex-column flex-md-column h-100">
+                    <div class="p-3 border-bottom bg-primary text-white d-none d-md-block">
                         <h6 class="mb-0">Sets</h6>
                     </div>
-                    <div class="flex-grow-1 overflow-auto">
+                    
+                    <!-- Wrapper for scroll indicators (mobile only) -->
+                    <div class="set-tabs-wrapper position-relative d-md-contents">
+                        <!-- Left scroll arrow (mobile only) -->
+                        <button class="scroll-arrow scroll-arrow-left d-md-none" 
+                                type="button"
+                                @onclick="ScrollTabsLeft"
+                                @onclick:stopPropagation="true">
+                            ‹
+                        </button>
+                        
+                        <!-- Right scroll arrow (mobile only) -->
+                        <button class="scroll-arrow scroll-arrow-right d-md-none" 
+                                type="button"
+                                @onclick="ScrollTabsRight"
+                                @onclick:stopPropagation="true">
+                            ›
+                        </button>
+                        
+                        <!-- Mobile: horizontal scroll with snap, Desktop: vertical scroll -->
+                        <div class="set-tabs-container d-flex flex-md-column overflow-auto flex-nowrap" 
+                             style="-webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory;"
+                             @ref="tabsContainer"
+                             @onscroll="HandleTabsScroll">
                         @foreach (var set in currentGameSession.Sets)
                         {
-                            <button class="btn btn-link text-start w-100 p-3 border-bottom @(selectedSetNumber == set.Number ? "bg-white fw-bold" : "")"
-                                    @onclick="() => SelectSet(set.Number)">
+                            <button class="btn btn-link text-start text-md-start text-center flex-shrink-0 w-auto w-md-100 px-4 px-md-3 py-3 border-end border-md-bottom @(selectedSetNumber == set.Number ? "bg-white fw-bold" : "")"
+                                    style="min-height: 48px; min-width: 100px; scroll-snap-align: start;"
+                                    type="button"
+                                    @onclick="() => SelectSet(set.Number)"
+                                    @onclick:stopPropagation="true">
                                 <div class="d-flex align-items-center">
                                     <span class="badge bg-secondary me-2">@set.Number</span>
                                     <span>Set @set.Number</span>
@@ -30,14 +56,18 @@
                                 </small>
                             </button>
                         }
+                        </div>
                     </div>
 
-                    <!-- View Scores Button at Bottom -->
-                    <div class="p-3 border-top">
-                        <button class="btn btn-warning w-100 mb-2" @onclick="ShowScores">
+                    <!-- View Scores and End Session Buttons -->
+                    <div class="p-3 border-top d-flex flex-row flex-md-column gap-2">
+                        <button class="btn btn-warning flex-grow-1" 
+                                style="min-height: 48px;"
+                                @onclick="ShowScores">
                             View Scores
                         </button>
-                        <button class="btn btn-danger w-100" 
+                        <button class="btn btn-danger flex-grow-1" 
+                                style="min-height: 48px;"
                                 @onclick="ShowEndSessionConfirmation" 
                                 disabled="@(!canEndSession || isEndingSession)">
                             @if (isEndingSession)
@@ -53,8 +83,8 @@
                 </div>
             </div>
 
-            <!-- Right Panel: Set Details -->
-            <div class="col-10 p-4">
+            <!-- Main Content: Set Details -->
+            <div class="col-12 col-md-9 col-lg-10 p-3 p-md-4">
                 @if (selectedSet != null)
                 {
                     <div class="mb-4">
@@ -80,6 +110,7 @@
                                 <div class="card-header" id="heading-set@(selectedSet.Number)-match@(match.Number)">
                                     <h5 class="mb-0">
                                         <button class="btn btn-link text-decoration-none w-100 text-start d-flex justify-content-between align-items-center @(isLatestMatch ? "" : "collapsed")"
+                                                style="min-height: 48px;"
                                                 type="button"
                                                 data-bs-toggle="collapse"
                                                 data-bs-target="#@collapseId"
@@ -108,43 +139,50 @@
                                         <div class="row g-3">
                                             @foreach (var court in match.Courts)
                                             {
-                                                <div class="col-12 col-md-6 col-lg-4">
+                                                <div class="col-12 col-md-6 col-xl-4">
                                                     <div class="card @(court.WinningTeam.HasValue ? "border-success" : "")">
                                                         <div class="card-header bg-light">
                                                             <strong>Court @court.Number</strong>
                                                         </div>
                                                         <div class="card-body">
-                                                            <!-- Team A -->
-                                                            <div class="mb-3 p-2 @(court.WinningTeam == 1 ? "bg-success bg-opacity-10 border border-success rounded" : "")">
-                                                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                                                    <strong>Team A</strong>
-                                                                    @if (court.WinningTeam == 1)
-                                                                    {
-                                                                        <span class="badge bg-success">Winner</span>
-                                                                    }
+                                                            <!-- Teams: Stack on mobile, side-by-side on desktop -->
+                                                            <div class="row g-2">
+                                                                <!-- Team A -->
+                                                                <div class="col-12 col-md-6">
+                                                                    <div class="p-2 @(court.WinningTeam == 1 ? "bg-success bg-opacity-10 border border-success rounded" : "border rounded")">
+                                                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                                                            <strong>Team A</strong>
+                                                                            @if (court.WinningTeam == 1)
+                                                                            {
+                                                                                <span class="badge bg-success">Winner</span>
+                                                                            }
+                                                                        </div>
+                                                                        <div class="d-flex flex-wrap gap-1">
+                                                                            @foreach (var playerNum in court.TeamA.PlayerNumbers)
+                                                                            {
+                                                                                <span class="badge bg-primary fs-6">P@(playerNum)</span>
+                                                                            }
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
-                                                                <div class="d-flex flex-wrap gap-1">
-                                                                    @foreach (var playerNum in court.TeamA.PlayerNumbers)
-                                                                    {
-                                                                        <span class="badge bg-primary">P@(playerNum)</span>
-                                                                    }
-                                                                </div>
-                                                            </div>
 
-                                                            <!-- Team B -->
-                                                            <div class="p-2 @(court.WinningTeam == 2 ? "bg-success bg-opacity-10 border border-success rounded" : "")">
-                                                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                                                    <strong>Team B</strong>
-                                                                    @if (court.WinningTeam == 2)
-                                                                    {
-                                                                        <span class="badge bg-success">Winner</span>
-                                                                    }
-                                                                </div>
-                                                                <div class="d-flex flex-wrap gap-1">
-                                                                    @foreach (var playerNum in court.TeamB.PlayerNumbers)
-                                                                    {
-                                                                        <span class="badge bg-primary">P@(playerNum)</span>
-                                                                    }
+                                                                <!-- Team B -->
+                                                                <div class="col-12 col-md-6">
+                                                                    <div class="p-2 @(court.WinningTeam == 2 ? "bg-success bg-opacity-10 border border-success rounded" : "border rounded")">
+                                                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                                                            <strong>Team B</strong>
+                                                                            @if (court.WinningTeam == 2)
+                                                                            {
+                                                                                <span class="badge bg-success">Winner</span>
+                                                                            }
+                                                                        </div>
+                                                                        <div class="d-flex flex-wrap gap-1">
+                                                                            @foreach (var playerNum in court.TeamB.PlayerNumbers)
+                                                                            {
+                                                                                <span class="badge bg-primary fs-6">P@(playerNum)</span>
+                                                                            }
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
 
@@ -152,10 +190,14 @@
                                                             @if (!match.IsComplete && court.WinningTeam == null)
                                                             {
                                                                 <div class="mt-3 d-grid gap-2">
-                                                                    <button class="btn btn-sm btn-success" @onclick="() => RecordWinner(court.Number, 1)">
+                                                                    <button class="btn btn-success" 
+                                                                            style="min-height: 48px;"
+                                                                            @onclick="() => RecordWinner(court.Number, 1)">
                                                                         Team A Wins
                                                                     </button>
-                                                                    <button class="btn btn-sm btn-success" @onclick="() => RecordWinner(court.Number, 2)">
+                                                                    <button class="btn btn-success" 
+                                                                            style="min-height: 48px;"
+                                                                            @onclick="() => RecordWinner(court.Number, 2)">
                                                                         Team B Wins
                                                                     </button>
                                                                 </div>
@@ -171,12 +213,16 @@
                                         {
                                             <div class="alert alert-info mt-3">
                                                 <h6>What's next?</h6>
-                                                <div class="d-grid gap-2 d-md-flex">
-                                                    <button class="btn btn-primary" @onclick="ContinueWithCurrentTeams">
-                                                        Continue with Current Teams
+                                                <div class="d-grid gap-2">
+                                                    <button class="btn btn-primary" 
+                                                            style="min-height: 48px;"
+                                                            @onclick="ContinueWithCurrentTeams">
+                                                        Continue with Teams
                                                     </button>
-                                                    <button class="btn btn-success" @onclick="ReassignTeams">
-                                                        Re-assign Teams (New Set)
+                                                    <button class="btn btn-success" 
+                                                            style="min-height: 48px;"
+                                                            @onclick="ReassignTeams">
+                                                        New Teams (New Set)
                                                     </button>
                                                 </div>
                                                 <small class="text-muted d-block mt-2">
@@ -194,7 +240,9 @@
                         @if (selectedSet.Number == 1 && selectedSet.Matches.Count == 1 && !selectedSet.Matches[0].IsComplete)
                         {
                             <div class="mt-3">
-                                <button class="btn btn-outline-warning" @onclick="RemixTeams">
+                                <button class="btn btn-outline-warning w-100 w-md-auto" 
+                                        style="min-height: 48px;"
+                                        @onclick="RemixTeams">
                                     Remix Teams
                                 </button>
                             </div>

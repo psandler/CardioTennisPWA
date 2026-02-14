@@ -113,3 +113,158 @@ code {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+/* Mobile-friendly horizontal scrolling tabs */
+.set-tabs-container {
+    /* Hide scrollbar on mobile, show on desktop */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+    overflow-x: auto !important;
+    overflow-y: hidden;
+    position: relative;
+}
+
+.set-tabs-container::-webkit-scrollbar {
+    display: none; /* Hide on mobile */
+}
+
+/* Show scrollbar on desktop only */
+@media (min-width: 768px) {
+    .set-tabs-container {
+        scrollbar-width: auto;
+    }
+    
+    .set-tabs-container::-webkit-scrollbar {
+        display: block;
+        width: 8px;
+        height: auto;
+    }
+    
+    .set-tabs-container::-webkit-scrollbar-track {
+        background: #e0e0e0;
+        border-radius: 4px;
+    }
+    
+    .set-tabs-container::-webkit-scrollbar-thumb {
+        background: #1b6ec2;
+        border-radius: 4px;
+    }
+}
+
+/* Ensure scroll container maintains touch behavior */
+.set-tabs-container {
+    touch-action: pan-x;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+}
+
+/* Fade gradients on edges to indicate scrollable content (mobile only) */
+@media (max-width: 767px) {
+    .set-tabs-wrapper {
+        position: relative;
+    }
+    
+    /* Left fade gradient */
+    .set-tabs-wrapper::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 30px;
+        background: linear-gradient(to right, rgba(248, 249, 250, 1) 0%, rgba(248, 249, 250, 0) 100%);
+        pointer-events: none;
+        z-index: 2;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    
+    /* Right fade gradient */
+    .set-tabs-wrapper::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 30px;
+        background: linear-gradient(to left, rgba(248, 249, 250, 1) 0%, rgba(248, 249, 250, 0) 100%);
+        pointer-events: none;
+        z-index: 2;
+        opacity: 1;
+        transition: opacity 0.3s;
+    }
+    
+    /* Show left fade when scrolled */
+    .set-tabs-wrapper.scrolled-left::before {
+        opacity: 1;
+    }
+    
+    /* Hide right fade when at end */
+    .set-tabs-wrapper.scrolled-right::after {
+        opacity: 0;
+    }
+    
+    /* Scroll arrows */
+    .scroll-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(27, 110, 194, 0.9);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 3;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        transition: background 0.2s;
+    }
+    
+    .scroll-arrow:active {
+        background: rgba(27, 110, 194, 1);
+    }
+    
+    .scroll-arrow-left {
+        left: 4px;
+        display: none;
+    }
+    
+    .scroll-arrow-right {
+        right: 4px;
+    }
+    
+    .set-tabs-wrapper.scrolled-left .scroll-arrow-left {
+        display: flex;
+    }
+    
+    .set-tabs-wrapper.scrolled-right .scroll-arrow-right {
+        display: none;
+    }
+}
+
+/* Prevent button focus from interfering with scroll */
+.set-tabs-container button:focus {
+    outline: none;
+}
+
+/* Show active tab with better visual feedback */
+.set-tabs-container button.bg-white {
+    border-bottom: 3px solid #1b6ec2;
+}
+
+/* Desktop: vertical scrolling */
+@media (min-width: 768px) {
+    .set-tabs-container {
+        flex-direction: column !important;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+    
+    .set-tabs-container button.bg-white {
+        border-bottom: none;
+        border-left: 3px solid #1b6ec2;
+    }
+}
