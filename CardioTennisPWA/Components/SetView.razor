@@ -295,3 +295,14 @@ else
                   Players="@playerStandings" 
                   TotalMatches="@totalMatchesPlayed"
                   OnClose="@CloseFinalScores" />
+
+<!-- Floating Help Button -->
+<button class="floating-help-btn" 
+        type="button" 
+        @onclick="ShowHelp"
+        title="Help & Instructions">
+    ?
+</button>
+
+<!-- Help Modal -->
+<HelpModal IsVisible="@showHelpModal" OnClose="@HideHelp" />

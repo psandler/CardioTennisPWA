@@ -33,6 +33,12 @@ else if (!showSetView)
         <button class="btn btn-primary btn-lg" @onclick="ShowNewSessionModal">
             New Session
         </button>
+        
+        <div class="mt-4">
+            <button class="btn btn-link text-muted" @onclick="ShowHelp">
+                <small>Need help? Click here</small>
+            </button>
+        </div>
     </div>
 }
 else
@@ -168,3 +174,14 @@ else
         </div>
     </div>
 </div>
+
+<!-- Floating Help Button -->
+<button class="floating-help-btn" 
+        type="button" 
+        @onclick="ShowHelp"
+        title="Help & Instructions">
+    ?
+</button>
+
+<!-- Help Modal -->
+<HelpModal IsVisible="@showHelpModal" OnClose="@HideHelp" />

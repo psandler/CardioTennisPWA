@@ -268,3 +268,56 @@ code {
         border-left: 3px solid #1b6ec2;
     }
 }
+
+/* Floating Help Button */
+.floating-help-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #1b6ec2;
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    font-size: 24px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.floating-help-btn:hover {
+    background: #155a8a;
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.floating-help-btn:active {
+    transform: scale(0.95);
+}
+
+/* Ensure help button doesn't interfere with other UI */
+@media (max-width: 767px) {
+    .floating-help-btn {
+        bottom: 16px;
+        right: 16px;
+        width: 52px;
+        height: 52px;
+        font-size: 22px;
+    }
+}
+
+/* Help modal content formatting */
+.help-modal .nav-tabs .nav-link {
+    color: #6c757d;
+}
+
+.help-modal .nav-tabs .nav-link.active {
+    color: #1b6ec2;
+    font-weight: 600;
+}

@@ -24,6 +24,7 @@ public partial class SetView
     private bool showScoresModal = false;
     private bool showFinalScoresModal = false;
     private bool showEndSessionConfirmation = false;
+    private bool showHelpModal = false;
     private List<Player>? playerStandings;
     private bool isEndingSession = false;
     private int totalMatchesPlayed = 0;
@@ -175,5 +176,15 @@ public partial class SetView
     private async Task HandleTabsScroll()
     {
         await JSRuntime.InvokeVoidAsync("updateScrollIndicators", tabsContainer);
+    }
+    
+    private void ShowHelp()
+    {
+        showHelpModal = true;
+    }
+    
+    private void HideHelp()
+    {
+        showHelpModal = false;
     }
 }

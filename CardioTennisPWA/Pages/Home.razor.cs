@@ -20,6 +20,7 @@ public partial class Home
     private bool isLoadingSession = true;
     private string? errorMessage = null;
     private bool showErrorDialog = false;
+    private bool showHelpModal = false;
     private int numCourts = 2;
     private int numPlayers = 16; // Default: 8 per court with 2 courts
     
@@ -185,5 +186,15 @@ public partial class Home
         {
             errorMessage = $"Error ending session: {ex.Message}";
         }
+    }
+    
+    private void ShowHelp()
+    {
+        showHelpModal = true;
+    }
+    
+    private void HideHelp()
+    {
+        showHelpModal = false;
     }
 }

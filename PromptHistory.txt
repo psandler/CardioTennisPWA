@@ -411,3 +411,32 @@ ReferenceError: arguments is not defined
    at CardioTennisPWA.Components.SetView.ScrollTabsRight() in C:\projects\CardioTennisPWA\CardioTennisPWA\Components\SetView.razor.cs:line 166
    at Microsoft.AspNetCore.Components.ComponentBase.CallStateHasChangedOnAsyncCompletion(Task task)
    at Microsoft.AspNetCore.Components.RenderTree.Renderer.GetErrorHandledTask(Task taskToHandle, ComponentState owningComponentState)
+
+   ----------
+
+   We need to find a place for help/instructions. I don't see an obvious place for one or more buttons icons to go since screen real estate is tight, so this may require the View Scores 
+   and End Session buttons to be smaller. We need instructions both:
+   
+   1. Instructions on how to use the app and its workflow
+   2. Instructions on how to install the PWA on desktop, android, and ios.
+
+   Could be one help button with two seconds or tabs, or the first set of instructions that has a link to the second set, or two separate buttons.
+
+   Reply with how you plan do it, or give me multiple options. No code yet.
+
+   ----------
+
+   Proceed with: 
+
+   "Option 1: Floating Help Icon (Recommended)
+   Where: Small circular "?" button fixed to bottom-right corner (like a chat widget)"
+
+   Don't forget in "How to Use" that the user has the "Remix" option before the first match starts.
+
+   ----------
+
+   The layout for the help screen looks good. It looks like you used some icons on the tabs and for the section headers. These are showing up as question marks. 
+   For example: "?? How to Use" and "2?? Assign Player Numbers". This is on both tabs. Fix or remove the icons (assuming that was what was intended).
+
+
+   
