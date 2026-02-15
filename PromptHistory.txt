@@ -438,5 +438,23 @@ ReferenceError: arguments is not defined
    The layout for the help screen looks good. It looks like you used some icons on the tabs and for the section headers. These are showing up as question marks. 
    For example: "?? How to Use" and "2?? Assign Player Numbers". This is on both tabs. Fix or remove the icons (assuming that was what was intended).
 
+   ----------
 
+   Pending additional testing, we are functionally complete. Let's clean up some documentation:
+
+   1. Keep the agents.md, HumanNotes.md, PromptHistory.txt, and Readme.md in the main folder. Move all other md files to a new "docs" folder. 
+   2. Review the README. 
+    a. The file is littered with question marks and double question marks. Clean these up.
+    b. Clean up in accuracies.
+    c. Remove and "progress" information, since the app is complete. It should still include information on possible future features.
+    d. Additional future features to list if they aren't present: Export results to CVS/Excel, Add AND Remove players after a session has started, correct scores if a mistake was made, view past sessions (if we decide to keep them in local storage), add player names, 
+   3. Fix the license (dead link). If the current license in not the least restrictive, change it to MIT or similar.
+    
+   ----------
+
+   In the license file, my name is "Phil Sandler" not "Paul Sandler" and the year is 2026. Fix.
+
+   In the readme: "Visual Studio 2022 or VS Code" you should add Visual Studio 2026 which it was developed in. You could also add Rider which I'm sure would work fine.
+
+   Just these adjustments for now.
    
