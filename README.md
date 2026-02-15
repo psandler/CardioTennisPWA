@@ -1,4 +1,4 @@
-# Cardio Tennis Score Tracker
+﻿# Cardio Tennis Score Tracker
 
 A Progressive Web App (PWA) for tracking scores during Cardio Tennis sessions. Built with Blazor WebAssembly, designed for coaches to manage multi-court sessions on mobile devices.
 
@@ -48,15 +48,15 @@ Cardio Tennis is a fun, high-energy group fitness activity that combines tennis 
 ### Project Structure
 ```
 CardioTennisPWA/
-??? Components/         # Blazor components (SetView, HelpModal, etc.)
-??? Models/            # Data models (GameSession, Match, Player, etc.)
-??? Pages/             # Routable pages (Home)
-??? Services/          # Business logic
-?   ??? IGameSessionQueryService    # Read operations
-?   ??? IGameSessionCommandService  # Write operations
-?   ??? ILocalStorageService        # Storage abstraction
-??? wwwroot/           # Static assets, PWA manifest
-??? docs/              # Documentation
+├── Components/         # Blazor components (SetView, HelpModal, etc.)
+├── Models/            # Data models (GameSession, Match, Player, etc.)
+├── Pages/             # Routable pages (Home)
+├── Services/          # Business logic
+│   ├── IGameSessionQueryService    # Read operations
+│   ├── IGameSessionCommandService  # Write operations
+│   └── ILocalStorageService        # Storage abstraction
+├── wwwroot/           # Static assets, PWA manifest
+└── docs/              # Documentation
 ```
 
 ## How It Works
